@@ -1,0 +1,5 @@
+recursive-include src/templates *.tmpl
+recursive-include test *_t.py
+recursive-include doc *
+recursive-include bin *
+include *.py
