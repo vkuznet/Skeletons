@@ -1,4 +1,4 @@
-all: build test docs
+all: build test
 
 install:
 	python setup.py install --prefix=$(PWD)/install
