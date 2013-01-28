@@ -6,15 +6,14 @@
 Welcome to Skeletons's documentation!
 =====================================
 
-Contents:
-
 .. toctree::
     :maxdepth: 4
 
+    intro.rst
+    mktmpl.rst
     pkg.rst
     example.rst
     code.rst
-
 
 Indices and tables
 ==================

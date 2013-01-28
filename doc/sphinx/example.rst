@@ -8,9 +8,8 @@ directory structure you should create
 
 .. code::
 
-    MyPackage/
-    ├── MyPackage.cc
-    └── MyPackage.h
+    MyPackage/MyPackage.cc
+    MyPackage/MyPackage.h
 
 Please note, that template files (MyPackage.cc, MyPackage.h) may have
 different names. But if you'd like Skeleton engine to change the name of your

@@ -1,22 +1,26 @@
 Package Templates
 =================
 
-In order to extend Skeleton package with your own package template(s) you need
+Skeletons template system uses user-defined templates which may have arbitrary
+files within template directory. The name of template directory defines a
+template type available to the end-users.
+
+In order to extend Skeletons package with your own package template(s) you need
 to fullfill the following requirements:
 
     - create a new package in Skeletons/src/python/Skeletons/templates area,
       e.g. MyPackage
     - place any type template inside your package, e.g.
       MyPackage/MyPackage.cc
-    - write your template according to Skeleton rules (see below)
-    - optionally create a new python module in Skeleton/src/python/mypackage.py
+    - write your template according to Skeletons rules (see below)
+    - optionally create a new python module in Skeletons/src/python/mypackage.py
       with class inherited from AbstractPkg with your implementation of rules,
       e.g. `class MyPackage(AbstractPkg)`, see below for comlpete examples
 
-Skeleton rules
---------------
+Skeletons rules
+---------------
 
-There are two types of tags supported by Skeleton package, template and example
+There are two types of tags supported by Skeletons package, template and example
 tags. Template tags can use any name which should be enclosed with double
 underscores, e.g. `__test__`, `__prodname__`, `__abc123__`. The example tags
 should start with `@example_` prefix followed by the name, e.g. `@example_track`.
@@ -37,10 +41,10 @@ template, which should be enclosed with two statements: `#python_begin` and
 
 Here we created an output vector which stores strings of shared pointers for
 data types found in __datatypes__ template tag. Please note, you'll need to
-return your output which will be used by Skeleton engine to replace python
+return your output which will be used by Skeletons engine to replace python
 snippet. In this case if you supply __datatypes__ with array of data types you
 want to create in python snippet, e.g. __datatypes__=['int', 'double'], then it
-Skeleton engine will replace this python snippet with the following code:
+Skeletons engine will replace this python snippet with the following code:
 
 .. code::
 
@@ -61,7 +65,7 @@ module name should be lower case, e.g. mypackage.py, you match your python
 module name with your template package, e.g. mypackage.py should cover
 MyPackage template. Finally you implement some of the main template methods of
 the AbstractPkg class. They are cpp_files, python_files, test_files, etc.
-Please follow Skeleton rules to create your template and use reasonable
+Please follow Skeletons rules to create your template and use reasonable
 template and example tags inside of your template. For example, when you write
 a C++ class it is appropriate to use template tags as `__class__`,
 `__header__`, while for any other type of template you may use their own
