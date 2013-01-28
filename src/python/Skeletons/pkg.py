@@ -45,9 +45,9 @@ class AbstractPkg(object):
         if  not self.config.has_key('dirs'):
             self.config.update({'dirs': dirs})
         self.pname = self.config.get('pname', None)
-        self.ptype = self.config.get('ptype', None)
+        self.tmpl  = self.config.get('tmpl', None)
         self.debug = self.config.get('debug', 0)
-        self.tdir  = self.config.get('tdir')
+        self.tdir  = self.config.get('tmpl_dir')
         author, office = get_user_info()
         if  office:
             self.author = '%s, %s' % (author, office)
@@ -59,7 +59,7 @@ class AbstractPkg(object):
     def tmpl_etags(self):
         "Scan template files and return example tags"
         keys = []
-        sdir = '%s/%s' % (self.tdir, self.ptype)
+        sdir = '%s/%s' % (self.tdir, self.tmpl)
         for name in os.listdir(sdir):
             if  name[-1] == '~':
                 continue
@@ -79,7 +79,7 @@ class AbstractPkg(object):
     def tmpl_tags(self):
         "Scan template files and return template tags"
         keys = []
-        sdir = '%s/%s' % (self.tdir, self.ptype)
+        sdir = '%s/%s' % (self.tdir, self.tmpl)
         for name in os.listdir(sdir):
             if  name[-1] == '~':
                 continue
@@ -119,7 +119,7 @@ class AbstractPkg(object):
             with open('BuildFile.xml', 'w') as stream:
                 stream.write(btmpl)
             return
-        bname = '%s/%s/BuildFile.tmpl' % (self.tdir, self.ptype)
+        bname = '%s/%s/BuildFile.tmpl' % (self.tdir, self.tmpl)
         if  self.debug:
             print "Read", bname
         if  not os.path.isfile(bname):
@@ -136,7 +136,7 @@ class AbstractPkg(object):
 
     def get_tmpl(self, ext):
         "Retrieve template files for given extenstion"
-        sdir = '%s/%s' % (self.tdir, self.ptype)
+        sdir = '%s/%s' % (self.tdir, self.tmpl)
         sources = [s for s in os.listdir(sdir) \
                 if os.path.splitext(s)[-1] == ext]
         return sources
@@ -177,12 +177,12 @@ class AbstractPkg(object):
         if  self.debug:
             print "Template tags:"
             pprint.pprint(kwds)
-        sdir = '%s/%s' % (self.tdir, self.ptype)
+        sdir = '%s/%s' % (self.tdir, self.tmpl)
         for src in sources:
             if  self.debug:
                 print "Read", src
             name, ext = os.path.splitext(src)
-            name = name.replace(self.ptype, self.pname) + ext
+            name = name.replace(self.tmpl, self.pname) + ext
             code = ""
             read_code = False
             with open('%s/%s' % (dst, name), 'w') as stream:
@@ -243,8 +243,7 @@ class AbstractPkg(object):
         "Main function"
         if  self.debug:
             print "\nCall generate"
-        kwds  = {'__pkgtype__': self.ptype,
-                 '__pkgname__': self.pname}
+        kwds  = {'__pkgname__': self.pname}
         self.dir_structure()
         ftype = self.config.get('ftype', 'all')
         if  ftype == 'all':
@@ -255,5 +254,5 @@ class AbstractPkg(object):
         else:
             getattr(self, '%s_files' % ftype)(kwds)
         msg = 'New package "%s" of %s type is successfully generated' \
-                % (self.config.get('pname'), self.ptype)
+                % (self.config.get('pname'), self.tmpl)
         print msg

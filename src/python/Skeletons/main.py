@@ -4,7 +4,7 @@
 """
 File       : Skeleton.py
 Author     : Valentin Kuznetsov <vkuznet@gmail.com>
-Description: 
+Description:
 """
 
 # system modules
@@ -20,7 +20,7 @@ def tmpl_dir():
     "Retturn default location of template directory"
     return '%s/templates' % '/'.join(__file__.split('/')[:-1])
 
-class SkeletonOptionParser: 
+class SkeletonOptionParser:
     "Skeleton option parser"
     def __init__(self):
         skl = os.environ.get('SKL_PRGM', None)
@@ -28,16 +28,15 @@ class SkeletonOptionParser:
             usage  = "Usage: %s [options]\n" % skl
         else:
             usage  = "Usage: %prog [options]\n"
-        usage += "More help should go here ...."
         self.parser = OptionParser(usage=usage)
         msg  = "debug output"
         self.parser.add_option("--debug", action="store_true",
                 default=False, dest="debug", help=msg)
-        msg  = "specify package type, e.g. EDProducer"
-        self.parser.add_option("--type", action="store", type="string", 
-                default='EDProducer', dest="ptype", help=msg)
+        msg  = "specify template, e.g. EDProducer"
+        self.parser.add_option("--tmpl", action="store", type="string",
+                default='', dest="tmpl", help=msg)
         msg  = "specify package name, e.g. MyProducer"
-        self.parser.add_option("--name", action="store", type="string", 
+        self.parser.add_option("--name", action="store", type="string",
                 default="TestPkg", dest="pname", help=msg)
         msg  = "specify author name"
         self.parser.add_option("--author", action="store", type="string",
@@ -67,11 +66,22 @@ class SkeletonOptionParser:
         "Returns parse list of options"
         return self.parser.parse_args()
 
-def test_env():
+def test_env(tdir, tmpl):
     """
     Test user environment, look-up if user has run cmsenv, otherwise
     provide meaningful error message back to the user.
     """
+    if  not tdir or not os.path.isdir(tdir):
+        print "Unable to acess template dir: %s" % tdir
+        sys.exit(1)
+    if  not os.listdir(tdir):
+        print "No template files found in template dir %s" % tdir
+        sys.exit(0)
+    if  not tmpl:
+        msg  = "No template type is provided, "
+        msg += "see available templates via --templates option"
+        print msg
+        sys.exit(1)
     cmssw = os.environ.get('CMSSW_BASE', '')
     sdir  = os.path.join(cmssw, 'src')
     if  not cmssw or not os.path.isdir(sdir) or \
@@ -104,40 +114,41 @@ def generator():
     """
     optmgr = SkeletonOptionParser()
     opts, args = optmgr.get_opt()
-    test_env()
-    config = {'pname': opts.pname, 'ptype': opts.ptype,
-              'args': parse_args(args), 'debug': opts.debug,
-              'ftype': opts.ftype, 'tdir': opts.tdir}
-    if  opts.ketags:
-        etags = opts.ketags.split(',')
-        config.update({'tmpl_etags': etags})
-    else:
-        config.update({'tmpl_etags': []})
-    if  opts.templates:
-        for name in os.listdir(opts.tdir):
-            print name
-        sys.exit(0)
-    try:
-        klass  = opts.ptype
-        mname  = 'Skeletons.%s' % klass.lower()
-        module = __import__(mname, fromlist=[opts.ptype])
-        obj    = getattr(module, klass)(config)
-    except Exception as err:
-        if  opts.debug:
-            print str(err)
-            print "Will use AbstractPkg"
-        module = __import__('Skeletons.pkg', fromlist=['AbstractPkg'])
-        obj    = getattr(module, 'AbstractPkg')(config)
     if  opts.debug:
         print obj
         print "Configuration:"
         pprint.pprint(config)
     if  opts.etags:
         obj.print_etags()
+        sys.exit(0)
     elif opts.tags:
         obj.print_tags()
+        sys.exit(0)
+    elif opts.templates:
+        for name in os.listdir(opts.tdir):
+            print name
+        sys.exit(0)
+    test_env(os.path.join(opts.tdir, opts.tmpl), opts.tmpl)
+    config = {'pname': opts.pname, 'tmpl': opts.tmpl,
+              'args': parse_args(args), 'debug': opts.debug,
+              'ftype': opts.ftype, 'tmpl_dir': opts.tdir}
+    if  opts.ketags:
+        etags = opts.ketags.split(',')
+        config.update({'tmpl_etags': etags})
     else:
-        obj.generate()
+        config.update({'tmpl_etags': []})
+    try:
+        klass  = opts.tmpl
+        mname  = 'Skeletons.%s' % klass.lower()
+        module = __import__(mname, fromlist=[opts.tmpl])
+        obj    = getattr(module, klass)(config)
+    except ImportError as err:
+        if  opts.debug:
+            print str(err), type(err)
+            print "Will use AbstractPkg"
+        module = __import__('Skeletons.pkg', fromlist=['AbstractPkg'])
+        obj    = getattr(module, 'AbstractPkg')(config)
+    obj.generate()
 
 if __name__ == '__main__':
     generator()
