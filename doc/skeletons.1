@@ -1,0 +1,735 @@
+.TH "SKELETONS" "1" "January 28, 2013" "development" "Skeletons"
+.SH NAME
+skeletons \- Skeletons Documentation
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.\" Man page generated from reStructuredText.
+.
+.SH INTRODUCTION
+.sp
+Skeletons is a general purpose template system. It is designed to support any
+type of templates, e.g. C++, python, etc., via template package where you keep
+your templates. It supports template and example tags within your template, as
+well as coding within your template via python language.
+.SH MKTMPL COMMAND
+.sp
+There is a general purpose \fBmktmpl\fP command which can be used to generate
+your favorite template. It has the following options:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+Usage: mktmpl [options]
+
+Options:
+  \-h, \-\-help           show this help message and exit
+  \-\-debug              debug output
+  \-\-tmpl=TMPL          specify template, e.g. EDProducer
+  \-\-name=PNAME         specify package name, e.g. MyProducer
+  \-\-author=AUTHOR      specify author name
+  \-\-ftype=FTYPE        specify file type to generate, e.g. \-\-generate=header,
+                       default is all files
+  \-\-keep\-etags=KETAGS  list examples tags which should be kept in generate
+                       code, e.g. \-\-keep\-etags=\(aq@example_trac,@example_hist\(aq
+  \-\-tdir=TDIR          specify template directory,
+  \-\-tags               list template tags
+  \-\-etags              list template example tags
+  \-\-templates          list supported templates
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+For example if you\(aqd like to generate CMS EDProducer package you can use mktmpl
+with the following set of options
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mktmpl \-\-tmpl=EDProcuder \-\-name=MyProducer
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+You can list available templates via the following command:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mktmpl \-\-templates
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Finally, to list available template and example tags you can use the following
+commands:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mktmpl \-\-tmpl=EDProducer \-\-tags
+mktmpl \-\-tmpl=EDProducer \-\-etags
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS CMS specific commands
+.sp
+Analogous to general \fBmktmpl\fP command we defined a series of CMS specific
+\fImk\fP commands. They are
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+\fBmkdatapkg\fP generates DataPkg package
+.IP \(bu 2
+\fBmkedanlzr\fP generates EDAnalyzer package
+.IP \(bu 2
+\fBmkdfltr\fP generates EDFilter package
+.IP \(bu 2
+\fBmkedprod\fP generates EDProducer package
+.IP \(bu 2
+\fBmkesprod\fP generates ESProducer package
+.IP \(bu 2
+\fBmkevhyp\fP generates EventHypothesis package
+.IP \(bu 2
+\fBmkskel\fP generates general purpose C++ skeletons, both source and
+header files
+.IP \(bu 2
+\fBmktsel\fP generates TSelector package
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SH PACKAGE TEMPLATES
+.sp
+Skeletons template system uses user\-defined templates which may have arbitrary
+files within template directory. The name of template directory defines a
+template type available to the end\-users.
+.sp
+In order to extend Skeletons package with your own package template(s) you need
+to fullfill the following requirements:
+.INDENT 0.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+create a new package in Skeletons/src/python/Skeletons/templates area,
+e.g. MyPackage
+.IP \(bu 2
+place any type template inside your package, e.g.
+MyPackage/MyPackage.cc
+.IP \(bu 2
+write your template according to Skeletons rules (see below)
+.IP \(bu 2
+optionally create a new python module in Skeletons/src/python/mypackage.py
+with class inherited from AbstractPkg with your implementation of rules,
+e.g. \fIclass MyPackage(AbstractPkg)\fP, see below for comlpete examples
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.SS Skeletons rules
+.sp
+There are two types of tags supported by Skeletons package, template and example
+tags. Template tags can use any name which should be enclosed with double
+underscores, e.g. \fI__test__\fP, \fI__prodname__\fP, \fI__abc123__\fP. The example tags
+should start with \fI@example_\fP prefix followed by the name, e.g. \fI@example_track\fP.
+.sp
+In addition to template and example tags, user can write python snippets in their
+template, which should be enclosed with two statements: \fI#python_begin\fP and
+\fI#python_end\fP. For example:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+#python_begin
+    output = []
+    for dtype in __datatypes__:
+        ptr = "std::shared_ptr<%s> p%s;" % dtype
+        output.append(ptr)
+    return output
+#python_end
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Here we created an output vector which stores strings of shared pointers for
+data types found in __datatypes__ template tag. Please note, you\(aqll need to
+return your output which will be used by Skeletons engine to replace python
+snippet. In this case if you supply __datatypes__ with array of data types you
+want to create in python snippet, e.g. __datatypes__=[\(aqint\(aq, \(aqdouble\(aq], then it
+Skeletons engine will replace this python snippet with the following code:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+std::shared_ptr<int> pint;
+std::shared_ptr<double> pdouble;
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Event though we do not impose any restriction on tag naming convention it is
+wise to use them appropriately, e.g. for your C++ class template you are better
+use \fI__class__\fP and similar tag name conventions.
+.SS Implementation rules
+.sp
+To implement your own template class you need to create a new python module
+(possibly with the same name as your template package) and inherit its code
+from AbstractPkg class. We advocate to follow standard python conventions, i.e.
+module name should be lower case, e.g. mypackage.py, you match your python
+module name with your template package, e.g. mypackage.py should cover
+MyPackage template. Finally you implement some of the main template methods of
+the AbstractPkg class. They are cpp_files, python_files, test_files, etc.
+Please follow Skeletons rules to create your template and use reasonable
+template and example tags inside of your template. For example, when you write
+a C++ class it is appropriate to use template tags as \fI__class__\fP,
+\fI__header__\fP, while for any other type of template you may use their own
+language specific tags.
+.SH EXAMPLE
+.sp
+Let\(aqs create a new template package and call it MyPackage. We will create one
+C++ and one header template within this package. We will write associated
+module for Skeleton engine and demonstrate how to run your template. Here is
+directory structure you should create
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+MyPackage/MyPackage.cc
+MyPackage/MyPackage.h
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Please note, that template files (MyPackage.cc, MyPackage.h) may have
+different names. But if you\(aqd like Skeleton engine to change the name of your
+template file according to user settings you need to name your template file
+with that name. For example, user wants to create a class Test from your
+MyPackage.cc, then Skeleton engine will change MyPackage.cc to Test.cc. While
+if you create a template file as TestMyPackageProd.cc the Skeleton engine will
+change it to TestTestProd.cc. The \fBMyPackage\fP serves as a replacement tag.
+.sp
+Based on Skeleton rules you may use any any word/characters combination
+enclosed in double underscored as placeholder tags and package name double
+enclosure will be substituted with user settings. For example, let\(aqs create a
+simple C++ class whose name should be changed. The template will looks like
+this:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+class __MyPackage__ {
+    __MyPackage__(); // constructor
+    ~__MyPackage__(); // destructor
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+if your template name depends on actual MyPackage class you\(aqll write it as
+following:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+class __MyPackage__: public MyPackage {
+    __MyPackage__(); // constructor
+    ~__MyPackage__(); // destructor
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+here the names enclosed with double underscores will be replaced by the package
+name of user choice, while base class will not. For example, if user will
+choose to create TestPackage (s)he will get the following:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+class TestPackage: public MyPackage {
+    TestPackage(); // constructor
+    virtual ~TestPackage(); // destructor
+}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+Here we show examples of MyPackage.cc and MyPackage.h for your convenience.
+.SS MyPackage.h example
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+#ifndef __class___ESPRODUCER_h
+#define __class___ESPRODUCER_h
+//
+// class declaration
+//
+class __class__ : public edm::ESProducer {
+   public:
+      __class__(const edm::ParameterSet&);
+      ~__class__();
+
+#python_begin
+    datatypes = []
+    for dtype in __datatypes__:
+        datatypes.append("boost::shared_ptr<%s>" % dtype)
+    return "      typedef edm::ESProducts<%s> ReturnType;" % \(aq,\(aq.join(datatypes)
+#python_end
+
+      ReturnType produce(const __record__&);
+   private:
+      // \-\-\-\-\-\-\-\-\-\-member data \-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-\-
+};
+#endif // end of __class___ESPRODUCER_h define
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SS MyPackage.cc example
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+// \-*\- C++ \-*\-
+//
+// Package        :  __name__
+// Class          :  __class__
+// Original Author:  __author__
+//         Created:  __date__
+
+//
+// constructors and destructor
+//
+__class__::__class__(const edm::ParameterSet& iConfig)
+{
+   setWhatProduced(this);
+}
+
+__class__::~__class__()
+{
+   // do anything here that needs to be done at desctruction time
+}
+
+
+//
+// member functions
+//
+
+// \-\-\-\-\-\-\-\-\-\-\-\- method called to produce the data  \-\-\-\-\-\-\-\-\-\-\-\-
+__class__::ReturnType
+__class__::produce(const __record__& iRecord)
+{
+   using namespace edm::es;
+#python_begin
+    out1 = []
+    out2 = []
+    for dtype in __datatypes__:
+        out1.append("   boost::shared_ptr<%s> p%s;\en" % (dtype, dtype))
+        out2.append("p%s" % dtype)
+    output  = \(aq\en\(aq.join(out1)
+    output += "   return products(%s);\en" % \(aq,\(aq.join(out2)
+    return output
+#python_end
+}
+
+//define this as a plug\-in
+DEFINE_FWK_EVENTSETUP_MODULE(__class__);
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+For these two types of classes we implement the following mypackage.py module
+.SS mypackage.py module
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+#!/usr/bin/env python
+#\-*\- coding: utf\-8 \-*\-
+#pylint: disable\-msg=
+
+"""MyPackage module"""
+
+# package modules
+from Skeletons.pkg import AbstractPkg
+
+class MyPackage(AbstractPkg):
+    "MyPackage implementation of AbstractPkg"
+    def __init__(self, config=None):
+        if  not config:
+            config = {}
+        AbstractPkg.__init__(self, config)
+
+    def cpp_files(self, kwds):
+        "Generate C++ files"
+        args = self.config.get(\(aqargs\(aq, None)
+        if  not args:
+            args = {\(aq__record__\(aq: \(aqMyRecord\(aq, \(aq__datatypes__\(aq: [\(aqMyData\(aq]}
+        kwds.update(args)
+        return super(ESProducer, self).cpp_files(kwds)
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+We re\-write \fIcpp_files\fP method of AbstractPkg class with our own implementation
+details. We define the default tags values to be used in our template and let
+user code to pass them via command line arguments. Finally, we create mkmypkg
+shell script in Skeletons/bin area with the following context:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+#!/bin/sh
+# find out where Skeleton is installed on a system
+sroot=\(gapython \-c "import Skeletons; print \(aq/\(aq.join(Skeletons.__file__.split(\(aq/\(aq)[:\-1])"\(ga
+# run actual script
+export SKL_PRGM=mkmypkg
+python $sroot/main.py \-\-type=MyPackage ${1+"$@"}
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+With all of thise in place we are ready to use our template as following:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+mkmypkg \-\-name=TestPackage "__record__=MyRecord" "__datatypes__=[\(aqint\(aq,
+\(aqdouble\(aq]"
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.SH SKELETON CORE CLASSES
+.sp
+File       : Skeleton.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description:
+.INDENT 0.0
+.TP
+.B class Skeletons.main.SkeletonOptionParser
+Skeleton option parser
+.INDENT 7.0
+.TP
+.B get_opt()
+Returns parse list of options
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Skeletons.main.generator()
+Code generator function, parse user arguments and load appropriate
+template module. Once loaded, run its data method depending on
+user requested input parameter, e.g. print_etags, print_tags or
+generate template code.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Skeletons.main.parse_args(args)
+Parse input arguments
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Skeletons.main.test_env(tdir, tmpl)
+Test user environment, look\-up if user has run cmsenv, otherwise
+provide meaningful error message back to the user.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Skeletons.main.tmpl_dir()
+Retturn default location of template directory
+.UNINDENT
+.sp
+File       : pkg.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description: AbstractGenerator class provides basic functionality
+to generate CMSSW class from given template
+.INDENT 0.0
+.TP
+.B class Skeletons.pkg.AbstractPkg(config=None)
+AbstractPkg takes care how to generate code from template/PKG
+package area. The PKG can be any directory which may include
+any types of files, e.g. C++ (.cc), python (.py), etc.
+This class relies on specific logic which we outline here:
+.INDENT 7.0
+.INDENT 3.5
+.INDENT 0.0
+.IP \(bu 2
+each template may use tags defined with double underscores
+enclosure, e.g. __class__, __record__, etc.
+.IP \(bu 2
+each template may have example tags, such tags should
+start with @example_. While processing template user may
+choose to strip them off or keep the code behind those tags
+.IP \(bu 2
+in addition user may specify pure python code which can
+operate with user defined tags. This code snipped should
+be enclosed with #python_begin and #python_end lines
+which declares start and end of python block
+.UNINDENT
+.UNINDENT
+.UNINDENT
+.INDENT 7.0
+.TP
+.B build_file(btmpl=None)
+Create BuildFile from given template
+.UNINDENT
+.INDENT 7.0
+.TP
+.B cpp_files(kwds)
+Generate C++ files
+.UNINDENT
+.INDENT 7.0
+.TP
+.B dir_structure()
+Create dir structure for generated package
+.UNINDENT
+.INDENT 7.0
+.TP
+.B gen_files(dst, sources, kwds)
+Generage files at given destination from provided sources and
+replace given tags in template files.
+.UNINDENT
+.INDENT 7.0
+.TP
+.B generate()
+Main function
+.UNINDENT
+.INDENT 7.0
+.TP
+.B get_tmpl(ext)
+Retrieve template files for given extenstion
+.UNINDENT
+.INDENT 7.0
+.TP
+.B header_files(kwds)
+Generate header files
+.UNINDENT
+.INDENT 7.0
+.TP
+.B parse_etags(line)
+Determine either skip or keep given line based on class tags 
+meta\-strings
+.UNINDENT
+.INDENT 7.0
+.TP
+.B print_etags()
+Print out template example tags
+.UNINDENT
+.INDENT 7.0
+.TP
+.B print_tags()
+Print out template keys
+.UNINDENT
+.INDENT 7.0
+.TP
+.B python_files(kwds)
+Generate python files
+.UNINDENT
+.INDENT 7.0
+.TP
+.B test_files(kwds)
+Generate test files
+.UNINDENT
+.INDENT 7.0
+.TP
+.B tmpl_etags()
+Scan template files and return example tags
+.UNINDENT
+.INDENT 7.0
+.TP
+.B tmpl_tags()
+Scan template files and return template tags
+.UNINDENT
+.UNINDENT
+.sp
+File       : utils.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description: Utilities module
+.INDENT 0.0
+.TP
+.B Skeletons.utils.functor(code, kwds, debug=0)
+Auto\-generate and execute function with given code and configuration
+For details of compile/exec/eval see
+\fI\%http://lucumr.pocoo.org/2011/2/1/exec-in-python/\fP
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Skeletons.utils.get_user_info()
+Return user name and office location, based on UNIX finger
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Skeletons.utils.parse_word(word)
+Parse word which contas double underscore tag
+.UNINDENT
+.sp
+File       : datapkg.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description: generates DataPkg CMSSW infrastructure
+.INDENT 0.0
+.TP
+.B class Skeletons.datapkg.DataPkg(config=None)
+DataPkg implementation of AbstractPkg
+.INDENT 7.0
+.TP
+.B cpp_files(kwds=None)
+Generate C++ files
+.UNINDENT
+.UNINDENT
+.sp
+File       : edlooper.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description: generates EDLooper CMSSW infrastructure
+.INDENT 0.0
+.TP
+.B class Skeletons.edlooper.EDLooper(config=None)
+EDLooper implementation of AbstractPkg
+.INDENT 7.0
+.TP
+.B cpp_files(kwds)
+Generate C++ files
+.UNINDENT
+.UNINDENT
+.sp
+File       : esproducer.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description: generates ESProducer CMSSW infrastructure
+.INDENT 0.0
+.TP
+.B class Skeletons.esproducer.ESProducer(config=None)
+ESProducer implementation of AbstractPkg
+.INDENT 7.0
+.TP
+.B cpp_files(kwds)
+Generate C++ files
+.UNINDENT
+.UNINDENT
+.sp
+File       : record.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description: generates Record CMSSW infrastructure
+.INDENT 0.0
+.TP
+.B class Skeletons.record.Record(config=None)
+Record implementation of AbstractPkg
+.INDENT 7.0
+.TP
+.B cpp_files(kwds)
+Generate C++ files
+.UNINDENT
+.INDENT 7.0
+.TP
+.B dir_structure()
+Generate directory structure
+.UNINDENT
+.INDENT 7.0
+.TP
+.B header_files(kwds)
+Generate header files
+.UNINDENT
+.UNINDENT
+.sp
+File       : skeleton.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description: generates Skeleton CMSSW infrastructure
+.INDENT 0.0
+.TP
+.B class Skeletons.skeleton.Skeleton(config=None)
+Skeleton implementation of AbstractPkg
+.INDENT 7.0
+.TP
+.B cpp_files(kwds)
+Generate C++ files
+.UNINDENT
+.INDENT 7.0
+.TP
+.B dir_structure()
+Generate directory structure
+.UNINDENT
+.INDENT 7.0
+.TP
+.B header_files(kwds)
+Generate header files
+.UNINDENT
+.UNINDENT
+.sp
+File       : tselector.py
+Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
+Description: generates TSelector CMSSW infrastructure
+.INDENT 0.0
+.TP
+.B class Skeletons.tselector.TSelector(config=None)
+TSelector implementation of AbstractPkg
+.INDENT 7.0
+.TP
+.B cpp_files(kwds=None)
+Generate C++ files
+.UNINDENT
+.UNINDENT
+.INDENT 0.0
+.IP \(bu 2
+\fIgenindex\fP
+.IP \(bu 2
+\fImodindex\fP
+.IP \(bu 2
+\fIsearch\fP
+.UNINDENT
+.SH AUTHOR
+Valentin Kuznetsov
+.SH COPYRIGHT
+2013, Valentin Kuznetsov
+.\" Generated by docutils manpage writer.
+.
