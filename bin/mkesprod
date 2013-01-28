@@ -4,4 +4,4 @@
 sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
 # run actual script
 export SKL_PRGM=mkesprod
-python $sroot/main.py --type=ESProducer ${1+"$@"}
+python $sroot/main.py --tmpl=ESProducer ${1+"$@"}

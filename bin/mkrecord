@@ -4,4 +4,4 @@
 sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
 # run actual script
 export SKL_PRGM=mkrecord
-python $sroot/main.py --type=Record ${1+"$@"}
+python $sroot/main.py --tmpl=Record ${1+"$@"}
