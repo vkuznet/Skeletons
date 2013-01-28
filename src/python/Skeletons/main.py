@@ -118,16 +118,6 @@ def generator():
         print obj
         print "Configuration:"
         pprint.pprint(config)
-    if  opts.etags:
-        obj.print_etags()
-        sys.exit(0)
-    elif opts.tags:
-        obj.print_tags()
-        sys.exit(0)
-    elif opts.templates:
-        for name in os.listdir(opts.tdir):
-            print name
-        sys.exit(0)
     test_env(os.path.join(opts.tdir, opts.tmpl), opts.tmpl)
     config = {'pname': opts.pname, 'tmpl': opts.tmpl,
               'args': parse_args(args), 'debug': opts.debug,
@@ -148,6 +138,16 @@ def generator():
             print "Will use AbstractPkg"
         module = __import__('Skeletons.pkg', fromlist=['AbstractPkg'])
         obj    = getattr(module, 'AbstractPkg')(config)
+    if  opts.etags:
+        obj.print_etags()
+        sys.exit(0)
+    elif opts.tags:
+        obj.print_tags()
+        sys.exit(0)
+    elif opts.templates:
+        for name in os.listdir(opts.tdir):
+            print name
+        sys.exit(0)
     obj.generate()
 
 if __name__ == '__main__':
