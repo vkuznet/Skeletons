@@ -47,6 +47,7 @@ class AbstractPkg(object):
         self.pname = self.config.get('pname', None)
         self.ptype = self.config.get('ptype', None)
         self.debug = self.config.get('debug', 0)
+        self.tdir  = self.config.get('tdir')
         author, office = get_user_info()
         if  office:
             self.author = '%s, %s' % (author, office)
@@ -58,8 +59,7 @@ class AbstractPkg(object):
     def tmpl_etags(self):
         "Scan template files and return example tags"
         keys = []
-        sdir = '%s/templates/%s' \
-                % ('/'.join(__file__.split('/')[:-1]), self.ptype)
+        sdir = '%s/%s' % (self.tdir, self.ptype)
         for name in os.listdir(sdir):
             if  name[-1] == '~':
                 continue
@@ -79,8 +79,7 @@ class AbstractPkg(object):
     def tmpl_tags(self):
         "Scan template files and return template tags"
         keys = []
-        sdir = '%s/templates/%s' \
-                % ('/'.join(__file__.split('/')[:-1]), self.ptype)
+        sdir = '%s/%s' % (self.tdir, self.ptype)
         for name in os.listdir(sdir):
             if  name[-1] == '~':
                 continue
@@ -120,8 +119,7 @@ class AbstractPkg(object):
             with open('BuildFile.xml', 'w') as stream:
                 stream.write(btmpl)
             return
-        bname = '%s/templates/%s/BuildFile.tmpl' \
-                % ('/'.join(__file__.split('/')[:-1]), self.ptype)
+        bname = '%s/%s/BuildFile.tmpl' % (self.tdir, self.ptype)
         if  self.debug:
             print "Read", bname
         if  not os.path.isfile(bname):
@@ -138,8 +136,7 @@ class AbstractPkg(object):
 
     def get_tmpl(self, ext):
         "Retrieve template files for given extenstion"
-        sdir = '%s/templates/%s' \
-                % ('/'.join(__file__.split('/')[:-1]), self.ptype)
+        sdir = '%s/%s' % (self.tdir, self.ptype)
         sources = [s for s in os.listdir(sdir) \
                 if os.path.splitext(s)[-1] == ext]
         return sources
@@ -180,8 +177,7 @@ class AbstractPkg(object):
         if  self.debug:
             print "Template tags:"
             pprint.pprint(kwds)
-        idir = '/'.join(__file__.split('/')[:-1])
-        sdir = '%s/templates/%s' % (idir, self.ptype)
+        sdir = '%s/%s' % (self.tdir, self.ptype)
         for src in sources:
             if  self.debug:
                 print "Read", src

@@ -16,6 +16,10 @@ from optparse import OptionParser
 if  sys.version_info < (2, 6):
     raise Exception("This script requires python 2.6 or greater")
 
+def tmpl_dir():
+    "Retturn default location of template directory"
+    return '%s/templates' % '/'.join(__file__.split('/')[:-1])
+
 class SkeletonOptionParser: 
     "Skeleton option parser"
     def __init__(self):
@@ -47,6 +51,9 @@ class SkeletonOptionParser:
         msg += "--keep-etags='@example_trac,@example_hist'"
         self.parser.add_option("--keep-etags", action="store", type="string",
                 default=None, dest="ketags", help=msg)
+        msg  = "specify template directory, "
+        self.parser.add_option("--tdir", action="store", type="string",
+                default=tmpl_dir(), dest="tdir", help=msg)
         msg  = "list template tags"
         self.parser.add_option("--tags", action="store_true",
                 default=False, dest="tags", help=msg)
@@ -100,15 +107,14 @@ def generator():
     test_env()
     config = {'pname': opts.pname, 'ptype': opts.ptype,
               'args': parse_args(args), 'debug': opts.debug,
-              'ftype': opts.ftype}
+              'ftype': opts.ftype, 'tdir': opts.tdir}
     if  opts.ketags:
         etags = opts.ketags.split(',')
         config.update({'tmpl_etags': etags})
     else:
         config.update({'tmpl_etags': []})
     if  opts.templates:
-        sdir = '%s/templates' % '/'.join(__file__.split('/')[:-1])
-        for name in os.listdir(sdir):
+        for name in os.listdir(opts.tdir):
             print name
         sys.exit(0)
     try:
