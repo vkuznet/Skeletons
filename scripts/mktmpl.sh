@@ -9,25 +9,30 @@
 # find out where Skeleton is installed on a system
 sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
 # run actual script
+if  [ "uname" == "Linux" ]; then
+    ecmd="echo -e"
+else:
+    ecmd="echo"
+fi
 if  [ -z "$1" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "-help" ]; then
-    echo "$cmd generates CMS $tmpl code"
-    echo "Usage: $cmd [options]"
-    echo "Options:"
-    echo "\t-h, --help           show this help message and exit"
-    echo "\t--debug              debug output"
-    echo "\t--author=AUTHOR      specify author name"
-    echo "\t--keep-etags=KETAGS  list examples tags which should be kept in generate"
-    echo "\t                     code, e.g. --keep-etags='@example_trac'"
-    echo "\t--tags               list template tags"
-    echo "\t--etags              list template example tags"
-    echo $examples
+    $ecmd "$cmd generates CMS $tmpl code"
+    $ecmd "Usage: $cmd [options]"
+    $ecmd "Options:"
+    $ecmd "   -h, --help           show this help message and exit"
+    $ecmd "   --debug              debug output"
+    $ecmd "   --author=AUTHOR      specify author name"
+    $ecmd "   --keep-etags=KETAGS  list examples tags which should be kept in generate"
+    $ecmd "                        code, e.g. --keep-etags='@example_trac'"
+    $ecmd "   --tags               list template tags"
+    $ecmd "   --etags              list template example tags"
+    $ecmd $examples
     exit
 fi
 tdir=`echo $0 | sed "s,/$cmd,,g"`
 opts="--tmpl=$tmpl --tdir=/$tdir/mkTemplates"
-base=`env | grep CMSSW_BASE`
+base=`env | grep ^CMSSW_BASE=`
 cmssw=`echo "$base/src" | sed -e "s,//,/,g" -e "s,CMSSW_BASE=,,g"`
-ldir=`echo $PWD | sed "s,$cmssw,,g"`
+ldir=`echo $PWD | awk '{z=split($0,a,"/"); print a[z]}'`
 error()
 {
     echo ""
@@ -46,7 +51,7 @@ if  [ -n "$ldir" ]; then
             # we're within subsystem level
             error
         fi
-        sdir=`echo "$ldir" | egrep "/src$|/plugin$"`
+        sdir=`echo "$ldir" | egrep "src$|plugin$"`
         if [ -d "../../../$ldir" ] && [ "$sdir" == "$ldir" ]; then
             # we're within subsystem/src level
             opts="$opts --ftype=cpp"
