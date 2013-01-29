@@ -46,7 +46,7 @@ if  [ -n "$ldir" ]; then
             # we're within subsystem level
             error
         fi
-        sdir=`echo "$ldir" | grep "/src$"`
+        sdir=`echo "$ldir" | egrep "/src$|/plugin$"`
         if [ -d "../../../$ldir" ] && [ "$sdir" == "$ldir" ]; then
             # we're within subsystem/src level
             opts="$opts --ftype=cpp"
