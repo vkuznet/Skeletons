@@ -23,11 +23,6 @@ def tmpl_dir():
 class SkeletonOptionParser:
     "Skeleton option parser"
     def __init__(self):
-        skl = os.environ.get('SKL_PRGM', None)
-        if  skl:
-            usage  = "Usage: %s [options]\n" % skl
-        else:
-            usage  = "Usage: %prog [options]\n"
         self.parser = OptionParser(usage=usage)
         msg  = "debug output"
         self.parser.add_option("--debug", action="store_true",
@@ -59,10 +54,9 @@ class SkeletonOptionParser:
         msg  = "list template example tags"
         self.parser.add_option("--etags", action="store_true",
                 default=False, dest="etags", help=msg)
-        if  not skl or skl == 'mktmpl':
-            msg  = "list supported templates"
-            self.parser.add_option("--templates", action="store_true",
-                    default=False, dest="templates", help=msg)
+        msg  = "list supported templates"
+        self.parser.add_option("--templates", action="store_true",
+                default=False, dest="templates", help=msg)
     def get_opt(self):
         "Returns parse list of options"
         return self.parser.parse_args()
@@ -81,17 +75,6 @@ def test_env(tdir, tmpl):
     if  not tmpl:
         msg  = "No template type is provided, "
         msg += "see available templates via --templates option"
-        print msg
-        sys.exit(1)
-    cmssw = os.environ.get('CMSSW_BASE', '')
-    sdir  = os.path.join(cmssw, 'src')
-    dirs  = os.getcwd().split('/')
-    if  not cmssw or not os.path.isdir(sdir) or \
-        '/'.join(dirs[:-1]) != sdir:
-        msg  = "Packages must be created in a 'subsystem'."
-        msg += "\nPlease set your CMSSW environment and go to $CMSSW_BASE/src"
-        msg += "\nCreate or choose directory from there and then "
-        msg += "run the script from that directory"
         print msg
         sys.exit(1)
 
