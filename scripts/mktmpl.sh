@@ -9,22 +9,21 @@
 # find out where Skeleton is installed on a system
 sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
 # run actual script
-if  [ "uname" == "Linux" ]; then
+ecmd="echo"
+if  [ `uname` == "Linux" ]; then
     ecmd="echo -e"
-else:
-    ecmd="echo"
 fi
 if  [ -z "$1" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "-help" ]; then
     $ecmd "$cmd generates CMS $tmpl code"
     $ecmd "Usage: $cmd [options]"
     $ecmd "Options:"
-    $ecmd "   -h, --help           show this help message and exit"
-    $ecmd "   --debug              debug output"
-    $ecmd "   --author=AUTHOR      specify author name"
-    $ecmd "   --keep-etags=KETAGS  list examples tags which should be kept in generate"
-    $ecmd "                        code, e.g. --keep-etags='@example_trac'"
-    $ecmd "   --tags               list template tags"
-    $ecmd "   --etags              list template example tags"
+    $ecmd "\t-h, --help           show this help message and exit"
+    $ecmd "\t--debug              debug output"
+    $ecmd "\t--author=AUTHOR      specify author name"
+    $ecmd "\t--keep-etags=KETAGS  list examples tags which should be kept in generate"
+    $ecmd "\t                     code, e.g. --keep-etags='@example_trac'"
+    $ecmd "\t--tags               list template tags"
+    $ecmd "\t--etags              list template example tags"
     $ecmd $examples
     exit
 fi
