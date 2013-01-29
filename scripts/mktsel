@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cmd=mktsel
+tmpl=TSelector
+tdir=`echo $0 | sed "s,/$cmd,,g"`
+examples="Examples: \
+    \n\t# generate My$tmpl package
+    \n\t$cmd --name=My$tmpl
+    \n\t# generate My$tmpl package with examples
+    \n\t$cmd --name=My$tmpl --keep-etags=\"@example_track\"
+    "
+source $tdir/mktmpl.sh

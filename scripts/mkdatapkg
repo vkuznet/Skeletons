@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cmd=mkdatapkg
+tmpl=DataPkg
+tdir=`echo $0 | sed "s,/$cmd,,g"`
+examples="Examples: \
+    \n\t# generate My$tmpl package
+    \n\t$cmd --name=My$tmpl
+    "
+source $tdir/mktmpl.sh
