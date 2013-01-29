@@ -100,10 +100,6 @@ def generator():
     """
     optmgr = SkeletonOptionParser()
     opts, args = optmgr.get_opt()
-    if  opts.debug:
-        print obj
-        print "Configuration:"
-        pprint.pprint(config)
     test_env(os.path.join(opts.tdir, opts.tmpl), opts.tmpl)
     config = {'pname': opts.pname, 'tmpl': opts.tmpl,
               'args': parse_args(args), 'debug': opts.debug,
@@ -113,6 +109,9 @@ def generator():
         config.update({'tmpl_etags': etags})
     else:
         config.update({'tmpl_etags': []})
+    if  opts.debug:
+        print "Configuration:"
+        pprint.pprint(config)
     try:
         klass  = opts.tmpl
         mname  = 'Skeletons.%s' % klass.lower()
