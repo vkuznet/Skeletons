@@ -68,7 +68,7 @@ def test_env(tdir, tmpl):
     provide meaningful error message back to the user.
     """
     if  not tdir or not os.path.isdir(tdir):
-        print "Unable to acess template dir: %s" % tdir
+        print "Unable to access template dir: %s" % tdir
         sys.exit(1)
     if  not os.listdir(tdir):
         print "No template files found in template dir %s" % tdir
