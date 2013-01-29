@@ -250,6 +250,7 @@ class AbstractPkg(object):
             self.build_file()
             self.python_files(kwds)
             self.cpp_files(kwds)
+            self.header_files(kwds)
             self.test_files(kwds)
         else:
             getattr(self, '%s_files' % ftype)(kwds)
