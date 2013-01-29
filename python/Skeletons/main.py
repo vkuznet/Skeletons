@@ -36,7 +36,7 @@ class SkeletonOptionParser:
                 default="TestPkg", dest="pname", help=msg)
         msg  = "specify author name"
         self.parser.add_option("--author", action="store", type="string",
-                default="Creator", dest="author", help=msg)
+                default="", dest="author", help=msg)
         msg  = "specify file type to generate, "
         msg += "e.g. --ftype=header, default is all files"
         self.parser.add_option("--ftype", action="store", type="string",
@@ -101,7 +101,7 @@ def generator():
     optmgr = SkeletonOptionParser()
     opts, args = optmgr.get_opt()
     test_env(os.path.join(opts.tdir, opts.tmpl), opts.tmpl)
-    config = {'pname': opts.pname, 'tmpl': opts.tmpl,
+    config = {'pname': opts.pname, 'tmpl': opts.tmpl, 'author': opts.author,
               'args': parse_args(args), 'debug': opts.debug,
               'ftype': opts.ftype, 'tmpl_dir': opts.tdir}
     if  opts.ketags:
