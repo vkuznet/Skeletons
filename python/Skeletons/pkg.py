@@ -48,7 +48,7 @@ class AbstractPkg(object):
         self.tmpl  = self.config.get('tmpl', None)
         self.debug = self.config.get('debug', 0)
         self.tdir  = self.config.get('tmpl_dir')
-        author, office = get_user_info()
+        author, office = get_user_info(self.config.get('author', None))
         if  office:
             self.author = '%s, %s' % (author, office)
         else:
