@@ -44,9 +44,10 @@ if  [ -n "$ldir" ]; then
     else # check subsysytem
         if [ -d "../../$ldir" ]; then
             # we're within subsystem level
-            opts="$opts --ftype=cpp"
+            error
         fi
-        if [ -d "../../../$ldir" ]; then
+        sdir=`echo "$ldir" | grep "/src$"`
+        if [ -d "../../../$ldir" ] && [ "$sdir" == "$ldir" ]; then
             # we're within subsystem/src level
             opts="$opts --ftype=cpp"
         fi
