@@ -213,7 +213,7 @@ class AbstractPkg(object):
         if  self.debug:
             print "\n%Call python_files"
         sources = kwds.get('python_files', self.get_tmpl('.py'))
-        self.gen_files('python', sources, kwds)
+        self.gen_files(kwds.get('dir', 'python'), sources, kwds)
 
     def cpp_files(self, kwds):
         "Generate C++ files"
@@ -223,37 +223,39 @@ class AbstractPkg(object):
                 self.get_tmpl('.cc') + self.get_tmpl('.cpp'))
         pkgname = self.config.get('pname')
         kwds.update({'__class__': pkgname, '__name__': pkgname})
-        self.gen_files('src', sources, kwds)
+        self.gen_files(kwds.get('dir', 'src'), sources, kwds)
 
     def test_files(self, kwds):
         "Generate test files"
         if  self.debug:
             print "\nCall test_files"
         sources = kwds.get('test_files', self.get_tmpl('.tst'))
-        self.gen_files('test', sources, kwds)
+        self.gen_files(kwds.get('dir', 'test'), sources, kwds)
 
     def header_files(self, kwds):
         "Generate header files"
         if  self.debug:
             print "\nCall header_files"
         sources = kwds.get('header_files', self.get_tmpl('.h'))
-        self.gen_files('interface', sources, kwds)
+        self.gen_files(kwds.get('dir', 'interface'), sources, kwds)
 
     def generate(self):
         "Main function"
         if  self.debug:
             print "\nCall generate"
         kwds  = {'__pkgname__': self.pname}
-        self.dir_structure()
         ftype = self.config.get('ftype', 'all')
         if  ftype == 'all':
+            self.dir_structure()
             self.build_file()
             self.python_files(kwds)
             self.cpp_files(kwds)
             self.header_files(kwds)
             self.test_files(kwds)
+            msg = 'New package "%s" of %s type is successfully generated' \
+                    % (self.config.get('pname'), self.tmpl)
         else:
+            kwds.update({'dir': os.getcwd()})
             getattr(self, '%s_files' % ftype)(kwds)
-        msg = 'New package "%s" of %s type is successfully generated' \
-                % (self.config.get('pname'), self.tmpl)
+            msg = 'Generated %s file(s)' % ftype
         print msg
