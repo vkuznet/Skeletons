@@ -44,17 +44,13 @@ class AbstractPkg(object):
         dirs = ['doc', 'interface', 'python', 'src', 'test']
         if  not self.config.has_key('dirs'):
             self.config.update({'dirs': dirs})
-        self.pname = self.config.get('pname', None)
-        self.tmpl  = self.config.get('tmpl', None)
-        self.debug = self.config.get('debug', 0)
-        self.tdir  = self.config.get('tmpl_dir')
-        author, office = get_user_info(self.config.get('author', None))
-        if  office:
-            self.author = '%s, %s' % (author, office)
-        else:
-            self.author = author
-        self.date  = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
-        self.rcsid = '$Id$'
+        self.pname  = self.config.get('pname', None)
+        self.tmpl   = self.config.get('tmpl', None)
+        self.debug  = self.config.get('debug', 0)
+        self.tdir   = self.config.get('tmpl_dir')
+        self.author = get_user_info(self.config.get('author', None))
+        self.date   = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
+        self.rcsid  = '$Id$'
         
     def tmpl_etags(self):
         "Scan template files and return example tags"

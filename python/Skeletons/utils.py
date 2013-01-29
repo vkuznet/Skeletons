@@ -10,6 +10,7 @@ Description: Utilities module
 # system modules
 import os
 import re
+import pwd
 import subprocess
 
 # template tag pattern
@@ -65,14 +66,7 @@ def functor(code, kwds, debug=0):
 def get_user_info(ainput):
     "Return user name and office location, based on UNIX finger"
     if  ainput:
-        return ainput, ''
-    cmd = "finger `whoami`"
-    res = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
-    author = os.getlogin()
-    office = ''
-    for line in res.stdout.read().split('\n'):
-        if  line.find('Name:') != -1:
-            author = line.split('Name:')[-1].strip()
-        if  line.find('Office:') != -1:
-            office = line.split('Office:')[-1].strip()
-    return author, office
+        return ainput
+    pwdstr = pwd.getpwnam(os.getlogin())
+    author = pwdstr.pw_gecos
+    return author
