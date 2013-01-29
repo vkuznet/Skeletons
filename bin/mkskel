@@ -1,7 +1,8 @@
 #!/bin/sh
 
+cmd=mkskel
 # find out where Skeleton is installed on a system
 sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
 # run actual script
-export SKL_PRGM=mkskel
-python $sroot/main.py --tmpl=Skeleton ${1+"$@"}
+tdir=`echo $0 | sed "s,/$cmd,,g"`
+python $sroot/main.py --tmpl=Skeleton --tdir=$tdir/mkTemplates ${1+"$@"}

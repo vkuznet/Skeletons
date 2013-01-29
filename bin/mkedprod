@@ -1,12 +1,13 @@
 #!/bin/sh
 
+cmd=mkedprod
 # find out where Skeleton is installed on a system
 sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
 # run actual script
 if  [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "-help" ]; then
-    echo "mkedprod generates producer skeletons"
-    echo "Usage: mkedprod [options]"
-    echo "Example: mkedprod --name=MyProducer"
+    echo "$cmd generates CMS producer class"
+    echo "Usage: $cmd [options]"
+    echo "Example: $cmd --name=MyProducer"
     exit
 fi
 test_env()
@@ -23,5 +24,5 @@ test_env()
     fi
 }
 test_env
-exit
-python $sroot/main.py --tmpl=EDProducer --tmpl=$0/mkTemplates ${1+"$@"}
+tdir=`echo $0 | sed "s,/$cmd,,g"`
+python $sroot/main.py --tmpl=EDProducer --tdir=$tdir/mkTemplates ${1+"$@"}
