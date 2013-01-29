@@ -62,8 +62,10 @@ def functor(code, kwds, debug=0):
     # located generated function object, run it and return its results
     return namespace['func']()
 
-def get_user_info():
+def get_user_info(ainput):
     "Return user name and office location, based on UNIX finger"
+    if  ainput:
+        return ainput, ''
     cmd = "finger `whoami`"
     res = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     author = os.getlogin()
