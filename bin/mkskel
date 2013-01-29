@@ -19,7 +19,8 @@ if  [ -z "$1" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "-help"
     echo "\t--author=AUTHOR      specify author name"
     echo "\t--tags               list template tags"
     echo "\t--ftype=FTYPE        specify file type to generate, e.g. --ftype=header,"
-    echo "\t                     default is all files"
+    echo "\t                     available file types: cpp, header, python"
+    echo "\t                     by default generate all files for given template"
     echo $examples
     exit
 fi
