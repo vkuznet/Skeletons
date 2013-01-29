@@ -3,5 +3,24 @@
 # find out where Skeleton is installed on a system
 sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
 # run actual script
-export SKL_PRGM=mkedfltr
-python $sroot/main.py --tmpl=producer ${1+"$@"}
+if  [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "-help" ]; then
+    export SKL_PRGM=mkedprod
+    python $sroot/main.py --help | egrep -v "template|tmpl"
+    echo "\nExample: mkedfltr --name=MyFilter"
+    exit
+fi
+test_env()
+{
+    base=`env | grep CMSSW_BASE`
+    cmssw=`echo "$base/src" | sed -e "s,//,/,g" -e "s,CMSSW_BASE=,,g"`
+    ldir=`echo $PWD | sed "s,$cmssw,,g"`
+    if  [ -z "$ldir" ] || [ ! -d "..$ldir" ]; then
+        echo ""
+        echo "Packages must be created in a 'subsystem'."
+        echo "Please set your CMSSW environment and go to $CMSSW_BASE/src"
+        echo "Create or choose directory from there and then "
+        echo "run the script from that directory"
+    fi
+}
+test_env
+python $sroot/main.py --tmpl=EDFilter --tmpl=$0/mkTemplates ${1+"$@"}
