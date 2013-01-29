@@ -29,7 +29,7 @@ from distutils.command.install import INSTALL_SCHEMES
 
 # add some path which will define the version,
 # e.g. it can be done in DataProvider/__init__.py
-sys.path.append(os.path.join(os.getcwd(), 'src/python'))
+sys.path.append(os.path.join(os.getcwd(), 'python'))
 try:
     from DataProvider import version as dp_version
 except:
@@ -125,7 +125,7 @@ class DocCommand(Command):
         "Run method"
         cdir = os.getcwd()
         os.chdir(os.path.join(os.path.join(cdir, 'doc'), 'sphinx'))
-        os.environ['PYTHONPATH'] = os.path.join(cdir, 'src/python')
+        os.environ['PYTHONPATH'] = os.path.join(cdir, 'python')
         subprocess.call('make html', shell=True)
         subprocess.call('make man', shell=True)
         os.chdir(cdir)
@@ -217,16 +217,12 @@ def main():
     author       = "Valentin Kuznetsov",
     author_email = "<Valentin Kuznetsov email [dot] com>",
     keywords     = ["Skeletons"]
-    package_dir  = {'Skeletons': 'src/python/Skeletons'}
-    packages     = find_packages('src/python')
+    package_dir  = {'Skeletons': 'python/Skeletons'}
+    packages     = find_packages('python')
     extentions   = [] # list your extensions here
-    # Extention example
-#    extentions   = [Extension('Skeletons.extensions.speed_extention',
-#                    include_dirs=['extensions'],
-#                    sources=['src/python/Skeletons/extensions/speed_extention.c'])]
     data_files   = [] # list of tuples whose entries are (dir, [data_files])
     data_files   = [(install_prefix('etc'), datafiles('etc')),
-                    (install_prefix('bin'), datafiles('bin'))
+                    (install_prefix('scripts'), datafiles('scripts'))
                    ]
     cms_license  = "Skeletons license"
     classifiers  = [
