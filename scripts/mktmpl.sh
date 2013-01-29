@@ -52,6 +52,9 @@ if  [ -n "$ldir" ]; then
         fi
         sdir=`echo "$ldir" | egrep "src$|plugin$"`
         if  [ "$sdir" == "$ldir" ]; then
+            if  [ "$PWD" == "$cmssw" ]; then
+                error
+            fi
             # we're within subsystem/src level
             opts="$opts --ftype=cpp"
         fi
