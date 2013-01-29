@@ -51,7 +51,7 @@ if  [ -n "$ldir" ]; then
             error
         fi
         sdir=`echo "$ldir" | egrep "src$|plugin$"`
-        if [ -d "../../../$ldir" ] && [ "$sdir" == "$ldir" ]; then
+        if  [ "$sdir" == "$ldir" ]; then
             # we're within subsystem/src level
             opts="$opts --ftype=cpp"
         fi
