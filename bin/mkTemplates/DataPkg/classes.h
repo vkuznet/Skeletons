@@ -1,11 +1,11 @@
 #include "DataFormats/Common/interface/Wrapper.h"
 
 //Add includes for your classes here
-#include "__subsys__/__DataPkg__/interface/YOUR_CLASS_GOES_HERE.h"
+#include "__subsys__/__class__/interface/YOUR_CLASS_GOES_HERE.h"
 #include <vector>
 
 namespace {
-   struct __subsys_____DataPkg__ {
+   struct __subsys_____class__ {
       //add 'dummy' Wrapper variable for each class type you put into the Event
       edm::Wrapper<YOUR_CLASS_GOES_HERE> dummy1;
       std::vector<YOUR_CLASS_GOES_HERE> dummy2;
