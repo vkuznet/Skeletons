@@ -21,6 +21,7 @@ test_env()
         echo "Please set your CMSSW environment and go to $CMSSW_BASE/src"
         echo "Create or choose directory from there and then "
         echo "run the script from that directory"
+        exit
     fi
 }
 test_env
