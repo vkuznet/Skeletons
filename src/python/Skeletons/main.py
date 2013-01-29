@@ -23,6 +23,7 @@ def tmpl_dir():
 class SkeletonOptionParser:
     "Skeleton option parser"
     def __init__(self):
+        usage  = "Usage: %prog [options]\n"
         self.parser = OptionParser(usage=usage)
         msg  = "debug output"
         self.parser.add_option("--debug", action="store_true",
