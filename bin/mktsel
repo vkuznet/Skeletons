@@ -1,28 +1,12 @@
 #!/bin/sh
 
 cmd=mktsel
-# find out where Skeleton is installed on a system
-sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
-# run actual script
-if  [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "-help" ]; then
-    python $sroot/main.py --help | egrep -v "template|tmpl"
-    echo "\nExample: $cmd --name=MyTSelector"
-    exit
-fi
-test_env()
-{
-    base=`env | grep CMSSW_BASE`
-    cmssw=`echo "$base/src" | sed -e "s,//,/,g" -e "s,CMSSW_BASE=,,g"`
-    ldir=`echo $PWD | sed "s,$cmssw,,g"`
-    if  [ -z "$ldir" ] || [ ! -d "..$ldir" ]; then
-        echo ""
-        echo "Packages must be created in a 'subsystem'."
-        echo "Please set your CMSSW environment and go to $CMSSW_BASE/src"
-        echo "Create or choose directory from there and then "
-        echo "run the script from that directory"
-        exit
-    fi
-}
-test_env
+tmpl=TSelector
 tdir=`echo $0 | sed "s,/$cmd,,g"`
-python $sroot/main.py --tmpl=TSelector --tdir=$tdir/mkTemplates ${1+"$@"}
+examples="Examples: \
+    \n\t# generate My$tmpl package
+    \n\t$cmd --name=My$tmpl
+    \n\t# generate My$tmpl package with examples
+    \n\t$cmd --name=My$tmpl --keep-etags=\"@example_track\"
+    "
+source $tdir/mktmpl.sh

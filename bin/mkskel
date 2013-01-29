@@ -1,8 +1,10 @@
 #!/bin/sh
 
 cmd=mkskel
-# find out where Skeleton is installed on a system
-sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
-# run actual script
+tmpl=Skeleton
 tdir=`echo $0 | sed "s,/$cmd,,g"`
-python $sroot/main.py --tmpl=Skeleton --tdir=$tdir/mkTemplates ${1+"$@"}
+examples="Examples: \
+    \n\t# generate My$tmpl package
+    \n\t$cmd --name=My$tmpl
+    "
+source $tdir/mktmpl.sh
