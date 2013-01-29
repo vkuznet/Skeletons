@@ -38,7 +38,7 @@ class SkeletonOptionParser:
         self.parser.add_option("--author", action="store", type="string",
                 default="Creator", dest="author", help=msg)
         msg  = "specify file type to generate, "
-        msg += "e.g. --generate=header, default is all files"
+        msg += "e.g. --ftype=header, default is all files"
         self.parser.add_option("--ftype", action="store", type="string",
                 default="all", dest="ftype", help=msg)
         msg  = "list examples tags which should be kept in "
