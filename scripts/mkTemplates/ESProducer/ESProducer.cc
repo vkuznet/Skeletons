@@ -95,10 +95,10 @@ __class__::produce(const __record__& iRecord)
     out1 = []
     out2 = []
     for dtype in __datatypes__:
-        out1.append("   boost::shared_ptr<%s> p%s;\n" % (dtype, dtype))
+        out1.append("   boost::shared_ptr<%s> p%s;" % (dtype, dtype))
         out2.append("p%s" % dtype)
     output  = '\n'.join(out1)
-    output += "   return products(%s);\n" % ','.join(out2)
+    output += "\n   return products(%s);" % ','.join(out2)
     print output
 #python_end
 
