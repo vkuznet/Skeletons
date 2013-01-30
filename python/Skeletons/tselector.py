@@ -26,3 +26,7 @@ class TSelector(AbstractPkg):
         pkgname = self.config.get('pname')
         kwds.update({'__class__': pkgname, '__name__': pkgname})
         self.gen_files('src', sources, kwds)
+
+    def header_files(self, kwds=None):
+        "Generate header files"
+        pass
