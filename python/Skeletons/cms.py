@@ -76,6 +76,7 @@ def test_cms_environment(tmpl):
     # test if we're within CMSSW_BASE/src/SubSystem/plugin area
     if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'plugin':
         return 'plugin'
+    return False
 
 def generate(kwds):
     "Run generator code based on provided set of arguments"
