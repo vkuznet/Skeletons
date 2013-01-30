@@ -1,7 +1,7 @@
 CMS commands
 ============
 
-The follwoing CMS commands is available for your needs:
+The following CMS commands is available for your needs:
 
 - mkdatapkg, generates code based on DataPkg template
 - mkedanlzr, generates code based on EDAnalyzer template

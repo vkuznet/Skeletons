@@ -28,7 +28,7 @@ with the following set of options
 
 .. code::
 
-    mktmpl --tmpl=EDProcuder --name=MyProducer
+    mktmpl --tmpl=EDProducer --name=MyProducer
 
 You can list available templates via the following command:
 
