@@ -11,9 +11,9 @@
      [Notes on implementation]
 */
 //
-// Original Author:  John Doe
-//         Created:  day-mon-xx
-// RCS(Id)
+// Original Author:  __author__
+//         Created:  __date__
+// __rcsid__
 //
 //
 
@@ -44,7 +44,7 @@ class __class__ : public edm::ESProducerLooper {
     datatypes = []
     for dtype in __datatypes__:
         datatypes.append("std::auto_ptr<%s>" % dtype)
-    return "      typedef edm::ESProducts<%s> ReturnType;" % ','.join(datatypes)
+    print "      typedef edm::ESProducts<%s> ReturnType;" % ','.join(datatypes)
 #python_end
 
       ReturnType produce(const recordname&);
@@ -105,7 +105,7 @@ __class__::produce(const recordname& iRecord)
         out2.append("p%s" % dtype)
     output  = '\n'.join(out1)
     output += "   return products(%s);\n" % ','.join(out2)
-    return output
+    print output
 #python_end
 }
 
