@@ -13,6 +13,9 @@ import sys
 import pprint
 from optparse import OptionParser
 
+# package modules
+from Skeletons.utils import get_code_generator, test_env
+
 if  sys.version_info < (2, 6):
     raise Exception("This script requires python 2.6 or greater")
 
@@ -62,23 +65,6 @@ class SkeletonOptionParser:
         "Returns parse list of options"
         return self.parser.parse_args()
 
-def test_env(tdir, tmpl):
-    """
-    Test user environment, look-up if user has run cmsenv, otherwise
-    provide meaningful error message back to the user.
-    """
-    if  not tdir or not os.path.isdir(tdir):
-        print "Unable to access template dir: %s" % tdir
-        sys.exit(1)
-    if  not os.listdir(tdir):
-        print "No template files found in template dir %s" % tdir
-        sys.exit(0)
-    if  not tmpl:
-        msg  = "No template type is provided, "
-        msg += "see available templates via --templates option"
-        print msg
-        sys.exit(1)
-
 def parse_args(args):
     "Parse input arguments"
     output = {}
@@ -112,17 +98,7 @@ def generator():
     if  opts.debug:
         print "Configuration:"
         pprint.pprint(config)
-    try:
-        klass  = opts.tmpl
-        mname  = 'Skeletons.%s' % klass.lower()
-        module = __import__(mname, fromlist=[opts.tmpl])
-        obj    = getattr(module, klass)(config)
-    except ImportError as err:
-        if  opts.debug:
-            print str(err), type(err)
-            print "Will use AbstractPkg"
-        module = __import__('Skeletons.pkg', fromlist=['AbstractPkg'])
-        obj    = getattr(module, 'AbstractPkg')(config)
+    obj = get_code_generator(config)
     if  opts.etags:
         obj.print_etags()
         sys.exit(0)
