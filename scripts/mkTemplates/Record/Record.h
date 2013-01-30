@@ -1,26 +1,26 @@
-nocap#ifndef skelpackage_skelname_h
-nocap#define skelpackage_skelname_h
-nocap// -*- C++ -*-
-nocap//
-nocap// Package:     skelpackage
-nocap// Class  :     skelname
-nocap// 
-nocap/**\class skelname skelname.h skelsubsys/skelpackage/interface/skelname.h
-nocap
-nocap Description: [one line class summary]
-nocap
-nocap Usage:
-nocap    <usage>
-nocap
-nocap*/
-nocap//
-nocap// Author:      John Doe
-nocap// Created:     day-mon-xx
-nocap// RCS(Id)
-nocap//
-nocap
-nocap#include "FWCore/Framework/interface/EventSetupRecordImplementation.h"
-nocap
-nocapclass skelname : public edm::eventsetup::EventSetupRecordImplementation<skelname> {};
-nocap
-nocap#endif
+#ifndef __class_____class___h
+#define __class_____class___h
+// -*- C++ -*-
+//
+// Package:     __class__
+// Class  :     __class__
+// 
+/**\class __class__ __class__.h __subsys__/__class__/interface/__class__.h
+
+ Description: [one line class summary]
+
+ Usage:
+    <usage>
+
+*/
+//
+// Author:      __author__
+// Created:     __date__
+// __rcsid__
+//
+
+#include "FWCore/Framework/interface/EventSetupRecordImplementation.h"
+
+class __class__ : public edm::eventsetup::EventSetupRecordImplementation<__class__> {};
+
+#endif
