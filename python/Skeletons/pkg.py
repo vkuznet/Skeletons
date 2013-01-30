@@ -248,8 +248,9 @@ class AbstractPkg(object):
             self.cpp_files(kwds)
             self.header_files(kwds)
             self.test_files(kwds)
-            msg = 'New package "%s" of %s type is successfully generated' \
-                    % (self.config.get('pname'), self.tmpl)
+            what = 'code' if self.tmpl in ['Record', 'Skeleton'] else 'package'
+            msg  = 'New %s "%s" of %s type is successfully generated' \
+                    % (what, self.config.get('pname'), self.tmpl)
         else:
             kwds.update({'dir': os.getcwd()})
             getattr(self, '%s_files' % ftype)(kwds)
