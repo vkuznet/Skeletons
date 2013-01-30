@@ -28,13 +28,16 @@ def config(tmpl, pkg_help, tmpl_dir):
             opt = sys.argv[idx]
             if  opt == '-author':
                 kwds['author'] = sys.argv[idx+1]
+                continue
             if  opt.find('example') != -1:
                 etags.append('@%s' % opt)
+                continue
             if  opt in ['-h', '--help', '-help']:
                 print pkg_help
                 sys.exit(0)
             if  opt == '-debug':
                 kwds['debug'] = True
+                continue
     elif len(sys.argv) == 1:
         # need to walk
         msg = 'Please enter %s name: ' % tmpl.lower()
