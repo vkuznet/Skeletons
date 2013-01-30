@@ -1,12 +1,52 @@
-#!/bin/sh
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable-msg=
+"""
+File       : mkedprod
+Author     : Valentin Kuznetsov <vkuznet@gmail.com>
+Description: mkedprod code
+"""
 
-cmd=mkedprod
-tmpl=EDProducer
-tdir=`echo $0 | sed "s,/$cmd,,g"`
-examples="Examples: \
-    \n\t# generate My$tmpl package
-    \n\t$cmd --name=My$tmpl
-    \n\t# generate My$tmpl package with examples
-    \n\t$cmd --name=My$tmpl --keep-etags=\"@example_particle\"
-    "
-source $tdir/mktmpl.sh
+# system modules
+import os
+import sys
+
+# package modules
+from Skeletons.cms import generate, config
+
+if  sys.version_info < (2, 6):
+    raise Exception("This script requires python 2.6 or greater")
+
+def tmpl_dir():
+    "Return location of template directory wrt script location"
+    return '%s/mkTemplates' % '/'.join(__file__.split('/')[:-1])
+
+def pkg_help():
+    "mkedprod help function"
+    msg  = '\nmkedprod script generates CMS EDProducer code'
+    msg += '\nUsage  : mkedprod ProducerName -author "FirstName LastName"'
+    msg += ' <example_myparticle>'
+    msg += '\nOutput : '
+    msg += """
+        MyProd
+        ├── BuildFile.xml
+        ├── doc
+        ├── interface
+        ├── python
+        │   ├── CfiFile_cfi.py
+        │   └── ConfFile_cfg.py
+        ├── src
+        │   └── MyProd.cc
+        └── test"""
+    msg += '\nExample:'
+    msg += '\n        # create new EDProducer code'
+    msg += '\n        mkedprod MyProd'
+    msg += '\n        # create new EDProducer code with given author'
+    msg += '\n        mkedprod MyProd -author "First Last"'
+    msg += '\n        # create new EDProducer code with myparticle example'
+    msg += '\n        mkedprod MyProd example_myparticle'
+    msg += '\n'
+    return msg
+
+if __name__ == '__main__':
+    generate(config('EDProducer', pkg_help(), tmpl_dir()))

@@ -1,10 +1,41 @@
-#!/bin/sh
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable-msg=
+"""
+File       : mkrecord
+Author     : Valentin Kuznetsov <vkuznet@gmail.com>
+Description: mkrecord code
+"""
 
-cmd=mkrecord
-tmpl=Record
-tdir=`echo $0 | sed "s,/$cmd,,g"`
-examples="Examples: \
-    \n\t# generate My$tmpl package
-    \n\t$cmd --name=My$tmpl
-    "
-source $tdir/mktmpl.sh
+# system modules
+import os
+import sys
+
+# package modules
+from Skeletons.cms import generate, config
+
+if  sys.version_info < (2, 6):
+    raise Exception("This script requires python 2.6 or greater")
+
+def tmpl_dir():
+    "Return location of template directory wrt script location"
+    return '%s/mkTemplates' % '/'.join(__file__.split('/')[:-1])
+
+def pkg_help():
+    "mkrecord help function"
+    msg  = '\nmkrecord script generates CMS C++ record code'
+    msg += '\nUsage  : mkrecord MyRecord -author "FirstName LastName"'
+    msg += '\nOutput : '
+    msg += """
+        MyRecord.cc
+        MyRecord.h"""
+    msg += '\nExample:'
+    msg += '\n        # create new C++ Record'
+    msg += '\n        mkrecord MyRecord'
+    msg += '\n        # create new C++ Record with given author'
+    msg += '\n        mkrecord MyRecord -author "First Last"'
+    msg += '\n'
+    return msg
+
+if __name__ == '__main__':
+    generate(config('Record', pkg_help(), tmpl_dir()))

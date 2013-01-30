@@ -1,10 +1,47 @@
-#!/bin/sh
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable-msg=
+"""
+File       : mkEDFilter
+Author     : Valentin Kuznetsov <vkuznet@gmail.com>
+Description: mkEDFilter code
+"""
 
-cmd=mkedfltr
-tmpl=EDFilter
-tdir=`echo $0 | sed "s,/$cmd,,g"`
-examples="Examples: \
-    \n\t# generate My$tmpl package
-    \n\t$cmd --name=My$tmpl
-    "
-source $tdir/mktmpl.sh
+# system modules
+import os
+import sys
+
+# package modules
+from Skeletons.cms import generate, config
+
+if  sys.version_info < (2, 6):
+    raise Exception("This script requires python 2.6 or greater")
+
+def tmpl_dir():
+    "Return location of template directory wrt script location"
+    return '%s/mkTemplates' % '/'.join(__file__.split('/')[:-1])
+
+def pkg_help():
+    "mkEDFilter help function"
+    msg  = '\nmkedfltr script generates CMS EDFilter code'
+    msg += '\nUsage  : mkFilter MyFilter -author "FirstName LastName"'
+    msg += '\nOutput : '
+    msg += """
+        MyFilter/
+        ├── BuildFile.xml
+        ├── doc
+        ├── interface
+        ├── python
+        ├── src
+        │   └── MyFilter.cc
+        └── test"""
+    msg += '\nExample:'
+    msg += '\n        # create new EDFilter code'
+    msg += '\n        mkFilter MyProd'
+    msg += '\n        # create new EDFilter code with given author'
+    msg += '\n        mkFilter MyProd -author "First Last"'
+    msg += '\n'
+    return msg
+
+if __name__ == '__main__':
+    generate(config('EDFilter', pkg_help(), tmpl_dir()))

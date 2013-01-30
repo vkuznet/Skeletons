@@ -1,12 +1,53 @@
-#!/bin/sh
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable-msg=
+"""
+File       : mktsel
+Author     : Valentin Kuznetsov <vkuznet@gmail.com>
+Description: mktsel code
+"""
 
-cmd=mktsel
-tmpl=TSelector
-tdir=`echo $0 | sed "s,/$cmd,,g"`
-examples="Examples: \
-    \n\t# generate My$tmpl package
-    \n\t$cmd --name=My$tmpl
-    \n\t# generate My$tmpl package with examples
-    \n\t$cmd --name=My$tmpl --keep-etags=\"@example_track\"
-    "
-source $tdir/mktmpl.sh
+# system modules
+import os
+import sys
+
+# package modules
+from Skeletons.cms import generate, config
+
+if  sys.version_info < (2, 6):
+    raise Exception("This script requires python 2.6 or greater")
+
+def tmpl_dir():
+    "Return location of template directory wrt script location"
+    return '%s/mkTemplates' % '/'.join(__file__.split('/')[:-1])
+
+def pkg_help():
+    "mktsel help function"
+    msg  = '\nmktsel script generates CMS TSelector code'
+    msg += '\nUsage  : mktsel ProducerName -author "FirstName LastName"'
+    msg += ' <example_track>'
+    msg += '\nOutput : '
+    msg += """
+        MyTSel/
+        ├── BuildFile.xml
+        ├── doc
+        ├── interface
+        ├── python
+        ├── src
+        │   ├── MyTSel.cc
+        │   ├── MyTSel.h
+        │   ├── classes.h
+        │   └── classes_def.xml
+        └── test"""
+    msg += '\nExample:'
+    msg += '\n        # create new TSelector code'
+    msg += '\n        mktsel MyTSel'
+    msg += '\n        # create new TSelector code with given author'
+    msg += '\n        mktsel MyTSel -author "First Last"'
+    msg += '\n        # create new TSelector code with myparticle example'
+    msg += '\n        mktsel MyTSel example_track'
+    msg += '\n'
+    return msg
+
+if __name__ == '__main__':
+    generate(config('TSelector', pkg_help(), tmpl_dir()))

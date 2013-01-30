@@ -1,10 +1,50 @@
-#!/bin/sh
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable-msg=
+"""
+File       : mkevhyp
+Author     : Valentin Kuznetsov <vkuznet@gmail.com>
+Description: mkevhyp code
+"""
 
-cmd=mkevhyp
-tmpl=EventHypothesis
-tdir=`echo $0 | sed "s,/$cmd,,g"`
-examples="Examples: \
-    \n\t# generate My$tmpl package
-    \n\t$cmd --name=My$tmpl
-    "
-source $tdir/mktmpl.sh
+# system modules
+import os
+import sys
+
+# package modules
+from Skeletons.cms import generate, config
+
+if  sys.version_info < (2, 6):
+    raise Exception("This script requires python 2.6 or greater")
+
+def tmpl_dir():
+    "Return location of template directory wrt script location"
+    return '%s/mkTemplates' % '/'.join(__file__.split('/')[:-1])
+
+def pkg_help():
+    "mkevhyp help function"
+    msg  = '\nmkevhyp script generates CMS EventHypothesis code'
+    msg += '\nUsage  : mkevhyp MyEventHypothesis -author "FirstName LastName"'
+    msg += '\nOutput : '
+    msg += """
+        MyEventHypothesis/
+        ├── BuildFile.xml
+        ├── doc
+        ├── interface
+        │   ├── MyEventHypothesis.h
+        │   └── MyEventHypothesisProducer.h
+        ├── python
+        ├── src
+        │   ├── MyEventHypothesis.cc
+        │   └── MyEventHypothesisProducer.cc
+        └── test"""
+    msg += '\nExample:'
+    msg += '\n        # create new EventHypothesis code'
+    msg += '\n        mkevhyp MyEventHypothesis'
+    msg += '\n        # create new EventHypothesis code with given author'
+    msg += '\n        mkevhyp MyEventHypothesis -author "First Last"'
+    msg += '\n'
+    return msg
+
+if __name__ == '__main__':
+    generate(config('EventHypothesis', pkg_help(), tmpl_dir()))

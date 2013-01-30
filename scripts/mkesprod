@@ -1,10 +1,47 @@
-#!/bin/sh
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable-msg=
+"""
+File       : mkesprod
+Author     : Valentin Kuznetsov <vkuznet@gmail.com>
+Description: mkesprod code
+"""
 
-cmd=mkesprod
-tmpl=ESProducer
-tdir=`echo $0 | sed "s,/$cmd,,g"`
-examples="Examples: \
-    \n\t# generate My$tmpl package
-    \n\t$cmd --name=My$tmpl
-    "
-source $tdir/mktmpl.sh
+# system modules
+import os
+import sys
+
+# package modules
+from Skeletons.cms import generate, config
+
+if  sys.version_info < (2, 6):
+    raise Exception("This script requires python 2.6 or greater")
+
+def tmpl_dir():
+    "Return location of template directory wrt script location"
+    return '%s/mkTemplates' % '/'.join(__file__.split('/')[:-1])
+
+def pkg_help():
+    "mkesprod help function"
+    msg  = '\nmkesprod script generates CMS ESProducer code'
+    msg += '\nUsage  : mkesprod MyProd -author "FirstName LastName"'
+    msg += '\nOutput : '
+    msg += """
+        MyProd/
+        ├── BuildFile.xml
+        ├── doc
+        ├── interface
+        ├── python
+        ├── src
+        │   ├── MyProd.cc
+        └── test"""
+    msg += '\nExample:'
+    msg += '\n        # create new ESProducer code'
+    msg += '\n        mkesprod MyProd'
+    msg += '\n        # create new ESProducer code with given author'
+    msg += '\n        mkesprod MyProd -author "First Last"'
+    msg += '\n'
+    return msg
+
+if __name__ == '__main__':
+    generate(config('ESProducer', pkg_help(), tmpl_dir()))

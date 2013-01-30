@@ -1,28 +1,41 @@
-#!/bin/sh
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable-msg=
+"""
+File       : mkskel
+Author     : Valentin Kuznetsov <vkuznet@gmail.com>
+Description: mkskel code
+"""
 
-cmd=mkskel
-tmpl=Skeleton
-tdir=`echo $0 | sed "s,/$cmd,,g"`
-examples="Examples: \
-    \n\t# generate My$tmpl package
-    \n\t$cmd --name=My$tmpl
-    "
-# find out where Skeleton is installed on a system
-sroot=`python -c "import Skeletons; print '/'.join(Skeletons.__file__.split('/')[:-1])"`
-# run actual script
-if  [ -z "$1" ] || [ "$1" == "-h" ] || [ "$1" == "--help" ] || [ "$1" == "-help" ]; then
-    echo "$cmd generates CMS $tmpl code"
-    echo "Usage: $cmd [options]"
-    echo "Options:"
-    echo "\t-h, --help           show this help message and exit"
-    echo "\t--debug              debug output"
-    echo "\t--author=AUTHOR      specify author name"
-    echo "\t--tags               list template tags"
-    echo "\t--ftype=FTYPE        specify file type to generate, e.g. --ftype=header,"
-    echo "\t                     available file types: cpp, header, python"
-    echo "\t                     by default generate all files for given template"
-    echo $examples
-    exit
-fi
-# run actual script
-python $sroot/main.py --tdir=$tdir/mkTemplates --tmpl=$tmpl ${1+"$@"}
+# system modules
+import os
+import sys
+
+# package modules
+from Skeletons.cms import generate, config
+
+if  sys.version_info < (2, 6):
+    raise Exception("This script requires python 2.6 or greater")
+
+def tmpl_dir():
+    "Return location of template directory wrt script location"
+    return '%s/mkTemplates' % '/'.join(__file__.split('/')[:-1])
+
+def pkg_help():
+    "mkskel help function"
+    msg  = '\nmkskel script generates CMS C++ Skeleton code'
+    msg += '\nUsage  : mkskel MySkeleton -author "FirstName LastName"'
+    msg += '\nOutput : '
+    msg += """
+        MySkeleton.cc
+        MySkeleton.h"""
+    msg += '\nExample:'
+    msg += '\n        # create new C++ Skeleton'
+    msg += '\n        mkskel MySkeleton'
+    msg += '\n        # create new C++ Skeleton with given author'
+    msg += '\n        mkskel MySkeleton -author "First Last"'
+    msg += '\n'
+    return msg
+
+if __name__ == '__main__':
+    generate(config('Skeleton', pkg_help(), tmpl_dir()))
