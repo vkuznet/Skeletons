@@ -10,7 +10,9 @@ Description: Utilities module
 # system modules
 import os
 import re
+import sys
 import pwd
+import pprint
 import subprocess
 
 # template tag pattern
@@ -32,6 +34,23 @@ def parse_word(word):
                 output.add('__%s__' % tag)
     return output
 
+def test_env(tdir, tmpl):
+    """
+    Test user environment, look-up if user has run cmsenv, otherwise
+    provide meaningful error message back to the user.
+    """
+    if  not tdir or not os.path.isdir(tdir):
+        print "Unable to access template dir: %s" % tdir
+        sys.exit(1)
+    if  not os.listdir(tdir):
+        print "No template files found in template dir %s" % tdir
+        sys.exit(0)
+    if  not tmpl:
+        msg  = "No template type is provided, "
+        msg += "see available templates via --templates option"
+        print msg
+        sys.exit(1)
+
 def functor(code, kwds, debug=0):
     """
     Auto-generate and execute function with given code and configuration
@@ -48,9 +67,20 @@ def functor(code, kwds, debug=0):
             msg = 'Unsupported data type "%s" <%s>' % (val, type(val)) 
             raise Exception(msg)
         args.append(arg)
-    func  = "\ndef func(%s):\n" % ','.join(args)
+    func  = '\nimport sys'
+    func += '\nimport StringIO'
+    func += "\ndef func(%s):\n" % ','.join(args)
     func += code
-    func += 'func()\n'
+    func += """
+def capture():
+    "Capture snippet printous"
+    old_stdout = sys.stdout
+    sys.stdout = StringIO.StringIO()
+    func()
+    out = sys.stdout.getvalue()
+    sys.stdout = old_stdout
+    return out\n
+capture()\n"""
     if  debug:
         print "\n### generated code\n"
         print func
@@ -61,12 +91,34 @@ def functor(code, kwds, debug=0):
     # execute compiled python code in given namespace
     exec obj in namespace
     # located generated function object, run it and return its results
-    return namespace['func']()
+    return namespace['capture']()
 
-def get_user_info(ainput):
+def get_user_info(ainput=None):
     "Return user name and office location, based on UNIX finger"
     if  ainput:
         return ainput
     pwdstr = pwd.getpwnam(os.getlogin())
     author = pwdstr.pw_gecos
     return author
+
+def get_code_generator(kwds):
+    """
+    Code generator function, parse user arguments, load and
+    return appropriate template generator module.
+    """
+    debug = kwds.get('debug', None)
+    if  debug:
+        print "Configuration:"
+        pprint.pprint(kwds)
+    try:
+        klass  = kwds.get('tmpl')
+        mname  = 'Skeletons.%s' % klass.lower()
+        module = __import__(mname, fromlist=[klass])
+        obj    = getattr(module, klass)(kwds)
+    except ImportError as err:
+        if  debug:
+            print str(err), type(err)
+            print "Will use AbstractPkg"
+        module = __import__('Skeletons.pkg', fromlist=['AbstractPkg'])
+        obj    = getattr(module, 'AbstractPkg')(kwds)
+    return obj
