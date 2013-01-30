@@ -1,0 +1,47 @@
+#!/usr/bin/env python
+#-*- coding: utf-8 -*-
+#pylint: disable-msg=
+"""
+File       : mkedlpr
+Author     : Valentin Kuznetsov <vkuznet@gmail.com>
+Description: mkedlpr code
+"""
+
+# system modules
+import os
+import sys
+
+# package modules
+from Skeletons.cms import generate, config
+
+if  sys.version_info < (2, 6):
+    raise Exception("This script requires python 2.6 or greater")
+
+def tmpl_dir():
+    "Return location of template directory wrt script location"
+    return '%s/mkTemplates' % '/'.join(__file__.split('/')[:-1])
+
+def pkg_help():
+    "mkedlpr help function"
+    msg  = '\nmkedlpr script generates CMS EDLooper code'
+    msg += '\nUsage  : mkedlpr MyLooper -author "FirstName LastName"'
+    msg += '\nOutput : '
+    msg += """
+        MyLooper/
+        ├── BuildFile.xml
+        ├── doc
+        ├── interface
+        ├── python
+        ├── src
+        │   ├── MyLooper.cc
+        └── test"""
+    msg += '\nExample:'
+    msg += '\n        # create new EDLooper code'
+    msg += '\n        mkedlpr MyLooper'
+    msg += '\n        # create new EDLooper code with given author'
+    msg += '\n        mkedlpr MyLooper -author "First Last"'
+    msg += '\n'
+    return msg
+
+if __name__ == '__main__':
+    generate(config('EDLooper', pkg_help(), tmpl_dir()))
