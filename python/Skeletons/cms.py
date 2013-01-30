@@ -36,7 +36,6 @@ def config(tmpl, pkg_help, tmpl_dir):
             if  opt == '-debug':
                 kwds['debug'] = True
     elif len(sys.argv) == 1:
-        print pkg_help
         # need to walk
         msg = 'Please enter %s name: ' % tmpl.lower()
         kwds['pname'] = raw_input(msg)
