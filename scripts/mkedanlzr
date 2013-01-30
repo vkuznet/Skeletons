@@ -10,11 +10,11 @@ Description: mkedanlzr code
 # system modules
 import sys
 
-# package modules
-from Skeletons.cms import generate, config
-
 if  sys.version_info < (2, 6):
     raise Exception("This script requires python 2.6 or greater")
+
+# package modules
+from Skeletons.cms import generate, config
 
 def tmpl_dir():
     "Return location of template directory wrt script location"
