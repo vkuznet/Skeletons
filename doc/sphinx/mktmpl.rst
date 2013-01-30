@@ -43,20 +43,4 @@ commands:
 
     mktmpl --tmpl=EDProducer --tags
     mktmpl --tmpl=EDProducer --etags
-
     
-CMS specific commands
----------------------
-
-Analogous to general **mktmpl** command we defined a series of CMS specific
-*mk* commands. They are
-
-    - **mkdatapkg** generates DataPkg package
-    - **mkedanlzr** generates EDAnalyzer package
-    - **mkdfltr** generates EDFilter package
-    - **mkedprod** generates EDProducer package
-    - **mkesprod** generates ESProducer package
-    - **mkevhyp** generates EventHypothesis package
-    - **mkskel** generates general purpose C++ skeletons, both source and
-      header files
-    - **mktsel** generates TSelector package

@@ -27,7 +27,10 @@ should start with `@example_` prefix followed by the name, e.g. `@example_track`
 
 In addition to template and example tags, user can write python snippets in their
 template, which should be enclosed with two statements: `#python_begin` and 
-`#python_end`. For example:
+`#python_end`. PLEASE NOTE: you must use proper identination for python snippets
+similar to normal python code requirements.
+
+For example:
 
 .. code::
 
@@ -36,20 +39,22 @@ template, which should be enclosed with two statements: `#python_begin` and
         for dtype in __datatypes__:
             ptr = "std::shared_ptr<%s> p%s;" % dtype
             output.append(ptr)
-        return output
+        print output
     #python_end
 
 Here we created an output vector which stores strings of shared pointers for
-data types found in __datatypes__ template tag. Please note, you'll need to
-return your output which will be used by Skeletons engine to replace python
-snippet. In this case if you supply __datatypes__ with array of data types you
-want to create in python snippet, e.g. __datatypes__=['int', 'double'], then it
-Skeletons engine will replace this python snippet with the following code:
+data types found in __datatypes__ template tag. Finally we printed out output
+vector content. Any print statement will be captured and its context will be
+added to your templates.  In this case if you supply __datatypes__ with array
+of data types you want to create in python snippet, e.g. __datatypes__=['int',
+'double'], the Skeletons engine will replace this python snippet with the
+following:
 
 .. code::
 
     std::shared_ptr<int> pint;
     std::shared_ptr<double> pdouble;
+
 
 Event though we do not impose any restriction on tag naming convention it is
 wise to use them appropriately, e.g. for your C++ class template you are better

@@ -1,4 +1,4 @@
-.TH "SKELETONS" "1" "January 28, 2013" "development" "Skeletons"
+.TH "SKELETONS" "1" "January 30, 2013" "development" "Skeletons"
 .SH NAME
 skeletons \- Skeletons Documentation
 .
@@ -36,6 +36,35 @@ Skeletons is a general purpose template system. It is designed to support any
 type of templates, e.g. C++, python, etc., via template package where you keep
 your templates. It supports template and example tags within your template, as
 well as coding within your template via python language.
+.SH CMS COMMANDS
+.sp
+The follwoing CMS commands is available for your needs:
+.INDENT 0.0
+.IP \(bu 2
+mkdatapkg, generates code based on DataPkg template
+.IP \(bu 2
+mkedanlzr, generates code based on EDAnalyzer template
+.IP \(bu 2
+mkedfltr, generates code based on EDFilter template
+.IP \(bu 2
+mkedlpr, generates code based on EDLooper template
+.IP \(bu 2
+mkedprod, generates code based on EProducer template
+.IP \(bu 2
+mkesprod, generates code based on ESProcuder template
+.IP \(bu 2
+mkevhyp, generates code based on EventHypothesis template
+.IP \(bu 2
+mkrecord, generates code based on Record template
+.IP \(bu 2
+mkskel, generates code based on Skeleton template
+.IP \(bu 2
+mktsel, generate code based on TSelector template
+.UNINDENT
+.sp
+The mkrecord and mkskel scripts will run anywhere on your system, while others
+requires that you should be within $CMSSW_BASE/src area. All scripts provides
+suitable help message and will guide you through the code generation process.
 .SH MKTMPL COMMAND
 .sp
 There is a general purpose \fBmktmpl\fP command which can be used to generate
@@ -104,33 +133,6 @@ mktmpl \-\-tmpl=EDProducer \-\-etags
 .fi
 .UNINDENT
 .UNINDENT
-.SS CMS specific commands
-.sp
-Analogous to general \fBmktmpl\fP command we defined a series of CMS specific
-\fImk\fP commands. They are
-.INDENT 0.0
-.INDENT 3.5
-.INDENT 0.0
-.IP \(bu 2
-\fBmkdatapkg\fP generates DataPkg package
-.IP \(bu 2
-\fBmkedanlzr\fP generates EDAnalyzer package
-.IP \(bu 2
-\fBmkdfltr\fP generates EDFilter package
-.IP \(bu 2
-\fBmkedprod\fP generates EDProducer package
-.IP \(bu 2
-\fBmkesprod\fP generates ESProducer package
-.IP \(bu 2
-\fBmkevhyp\fP generates EventHypothesis package
-.IP \(bu 2
-\fBmkskel\fP generates general purpose C++ skeletons, both source and
-header files
-.IP \(bu 2
-\fBmktsel\fP generates TSelector package
-.UNINDENT
-.UNINDENT
-.UNINDENT
 .SH PACKAGE TEMPLATES
 .sp
 Skeletons template system uses user\-defined templates which may have arbitrary
@@ -166,7 +168,10 @@ should start with \fI@example_\fP prefix followed by the name, e.g. \fI@example_
 .sp
 In addition to template and example tags, user can write python snippets in their
 template, which should be enclosed with two statements: \fI#python_begin\fP and
-\fI#python_end\fP. For example:
+\fI#python_end\fP. PLEASE NOTE: you must use proper identination for python snippets
+similar to normal python code requirements.
+.sp
+For example:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -177,7 +182,7 @@ template, which should be enclosed with two statements: \fI#python_begin\fP and
     for dtype in __datatypes__:
         ptr = "std::shared_ptr<%s> p%s;" % dtype
         output.append(ptr)
-    return output
+    print output
 #python_end
 .ft P
 .fi
@@ -185,11 +190,12 @@ template, which should be enclosed with two statements: \fI#python_begin\fP and
 .UNINDENT
 .sp
 Here we created an output vector which stores strings of shared pointers for
-data types found in __datatypes__ template tag. Please note, you\(aqll need to
-return your output which will be used by Skeletons engine to replace python
-snippet. In this case if you supply __datatypes__ with array of data types you
-want to create in python snippet, e.g. __datatypes__=[\(aqint\(aq, \(aqdouble\(aq], then it
-Skeletons engine will replace this python snippet with the following code:
+data types found in __datatypes__ template tag. Finally we printed out output
+vector content. Any print statement will be captured and its context will be
+added to your templates.  In this case if you supply __datatypes__ with array
+of data types you want to create in python snippet, e.g. __datatypes__=[\(aqint\(aq,
+\(aqdouble\(aq], the Skeletons engine will replace this python snippet with the
+following:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -318,7 +324,7 @@ class __class__ : public edm::ESProducer {
     datatypes = []
     for dtype in __datatypes__:
         datatypes.append("boost::shared_ptr<%s>" % dtype)
-    return "      typedef edm::ESProducts<%s> ReturnType;" % \(aq,\(aq.join(datatypes)
+    print "      typedef edm::ESProducts<%s> ReturnType;" % \(aq,\(aq.join(datatypes)
 #python_end
 
       ReturnType produce(const __record__&);
@@ -374,7 +380,7 @@ __class__::produce(const __record__& iRecord)
         out2.append("p%s" % dtype)
     output  = \(aq\en\(aq.join(out1)
     output += "   return products(%s);\en" % \(aq,\(aq.join(out2)
-    return output
+    print output
 #python_end
 }
 
@@ -479,12 +485,6 @@ generate template code.
 .TP
 .B Skeletons.main.parse_args(args)
 Parse input arguments
-.UNINDENT
-.INDENT 0.0
-.TP
-.B Skeletons.main.test_env(tdir, tmpl)
-Test user environment, look\-up if user has run cmsenv, otherwise
-provide meaningful error message back to the user.
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -607,13 +607,25 @@ For details of compile/exec/eval see
 .UNINDENT
 .INDENT 0.0
 .TP
-.B Skeletons.utils.get_user_info()
+.B Skeletons.utils.get_code_generator(kwds)
+Code generator function, parse user arguments, load and
+return appropriate template generator module.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Skeletons.utils.get_user_info(ainput=None)
 Return user name and office location, based on UNIX finger
 .UNINDENT
 .INDENT 0.0
 .TP
 .B Skeletons.utils.parse_word(word)
 Parse word which contas double underscore tag
+.UNINDENT
+.INDENT 0.0
+.TP
+.B Skeletons.utils.test_env(tdir, tmpl)
+Test user environment, look\-up if user has run cmsenv, otherwise
+provide meaningful error message back to the user.
 .UNINDENT
 .sp
 File       : datapkg.py
@@ -717,6 +729,11 @@ TSelector implementation of AbstractPkg
 .TP
 .B cpp_files(kwds=None)
 Generate C++ files
+.UNINDENT
+.INDENT 7.0
+.TP
+.B header_files(kwds=None)
+Generate header files
 .UNINDENT
 .UNINDENT
 .INDENT 0.0

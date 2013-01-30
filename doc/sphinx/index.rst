@@ -10,6 +10,7 @@ Welcome to Skeletons's documentation!
     :maxdepth: 4
 
     intro.rst
+    cms.rst
     mktmpl.rst
     pkg.rst
     example.rst
