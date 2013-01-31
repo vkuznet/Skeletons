@@ -76,8 +76,8 @@ def test_cms_environment(tmpl):
     if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'src':
         return 'src'
     # test if we're within CMSSW_BASE/src/SubSystem/plugin area
-    if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'plugin':
-        return 'plugin'
+    if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'plugins':
+        return 'plugins'
     return False
 
 def generate(kwds):
@@ -86,7 +86,7 @@ def generate(kwds):
     tmpl   = kwds.get('tmpl')
     if  tmpl not in ['Record', 'Skeleton']:
         whereami = test_cms_environment(tmpl)
-        if  whereami in ['src', 'plugin']:
+        if  whereami in ['src', 'plugins']:
             config.update({'ftype': 'cpp'})
         elif whereami == 'subsystem':
             config.update({'ftype': 'all'})
