@@ -168,6 +168,8 @@ class AbstractPkg(object):
         subsys = os.getcwd().split('/')[-3]
         kwds.update({'__author__': self.author,
                      '__date__': self.date,
+                     '__class__': self.pname,
+                     '__name__': self.pname,
                      '__rcsid__': self.rcsid,
                      '__subsys__': subsys})
         if  self.debug:
@@ -175,6 +177,8 @@ class AbstractPkg(object):
             pprint.pprint(kwds)
         sdir = '%s/%s' % (self.tdir, self.tmpl)
         for src in sources:
+            if  not os.path.isfile('%s/%s' % (sdir, src)):
+                continue
             if  self.debug:
                 print "Read", src
             name, ext = os.path.splitext(src)
@@ -204,36 +208,49 @@ class AbstractPkg(object):
                                 line = line.replace(key, val)
                         stream.write(line)
 
+    def make_files(self, kwds):
+        "Generate make files"
+        if  self.debug:
+            print "\nCall make_files"
+        sources = ['Makefile', 'Makefile.mk']
+        self.gen_files(os.getcwd(), sources, kwds)
+
     def python_files(self, kwds):
         "Generate python files"
         if  self.debug:
-            print "\n%Call python_files"
+            print "\nCall python_files"
         sources = kwds.get('python_files', self.get_tmpl('.py'))
-        self.gen_files(kwds.get('dir', 'python'), sources, kwds)
+        self.gen_files(kwds.get('python_dir', 'python'), sources, kwds)
 
     def cpp_files(self, kwds):
         "Generate C++ files"
         if  self.debug:
             print "\nCall cpp_files"
         sources = kwds.get('cpp_files', 
-                self.get_tmpl('.cc') + self.get_tmpl('.cpp'))
-        pkgname = self.config.get('pname')
-        kwds.update({'__class__': pkgname, '__name__': pkgname})
-        self.gen_files(kwds.get('dir', 'src'), sources, kwds)
+                self.get_tmpl('.cc') + self.get_tmpl('.cpp') +
+                self.get_tmpl('.inl'))
+        self.gen_files(kwds.get('cpp_dir', 'src'), sources, kwds)
 
     def test_files(self, kwds):
         "Generate test files"
         if  self.debug:
             print "\nCall test_files"
         sources = kwds.get('test_files', self.get_tmpl('.tst'))
-        self.gen_files(kwds.get('dir', 'test'), sources, kwds)
+        self.gen_files(kwds.get('test_dir', 'test'), sources, kwds)
 
     def header_files(self, kwds):
         "Generate header files"
         if  self.debug:
             print "\nCall header_files"
         sources = kwds.get('header_files', self.get_tmpl('.h'))
-        self.gen_files(kwds.get('dir', 'interface'), sources, kwds)
+        self.gen_files(kwds.get('header_dir', 'interface'), sources, kwds)
+
+    def doc_files(self, kwds):
+        "Generate doc files"
+        if  self.debug:
+            print "\nCall doc_files"
+        sources = kwds.get('doc_files', self.get_tmpl('.txt'))
+        self.gen_files(kwds.get('doc_dir', 'doc'), sources, kwds)
 
     def generate(self):
         "Main function"
@@ -241,13 +258,24 @@ class AbstractPkg(object):
             print "\nCall generate"
         kwds  = {'__pkgname__': self.pname}
         ftype = self.config.get('ftype', 'all')
+        dirs  = self.config.get('dirs') + ['make']
         if  ftype == 'all':
             self.dir_structure()
             self.build_file()
-            self.python_files(kwds)
-            self.cpp_files(kwds)
-            self.header_files(kwds)
-            self.test_files(kwds)
+            for elem in dirs:
+                # dir mapping to class methods, src means cpp_files, etc.
+                if  elem == 'plugins' or elem == 'src':
+                    elem = 'cpp'
+                if  elem == 'interface':
+                    elem = 'header'
+                try:
+                    getattr(self, '%s_files' % elem)(kwds)
+                except AttributeError as err:
+                    print str(err), type(err)
+                    msg  = 'Please extend Skeleton/pkg.py and provide '
+                    msg += '%s_files method implementation' % elem
+                    print msg
+                    sys.exit(1)
             what = 'code' if self.tmpl in ['Record', 'Skeleton'] else 'package'
             msg  = 'New %s "%s" of %s type is successfully generated' \
                     % (what, self.config.get('pname'), self.tmpl)
