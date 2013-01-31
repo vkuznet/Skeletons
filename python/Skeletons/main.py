@@ -95,9 +95,6 @@ def generator():
         config.update({'tmpl_etags': etags})
     else:
         config.update({'tmpl_etags': []})
-    if  opts.debug:
-        print "Configuration:"
-        pprint.pprint(config)
     obj = get_code_generator(config)
     if  opts.etags:
         obj.print_etags()
