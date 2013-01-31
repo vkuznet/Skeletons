@@ -114,11 +114,10 @@ def get_code_generator(kwds):
         klass  = kwds.get('tmpl')
         mname  = 'Skeletons.%s' % klass.lower()
         module = __import__(mname, fromlist=[klass])
-        obj    = getattr(module, klass)(kwds)
     except ImportError as err:
+        klass  = 'AbstractPkg'
+        module = __import__('Skeletons.pkg', fromlist=[klass])
         if  debug:
-            print str(err), type(err)
-            print "Will use AbstractPkg"
-        module = __import__('Skeletons.pkg', fromlist=['AbstractPkg'])
-        obj    = getattr(module, 'AbstractPkg')(kwds)
+            print "%s, will use %s" % (str(err), klass)
+    obj = getattr(module, klass)(kwds)
     return obj
