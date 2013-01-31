@@ -2,17 +2,12 @@
 #define EventHypothesis___class_____class__Producer_h
 #define __class___h
 // -*- C++ -*-
-//// -*- C++ -*-
 //
-// Package:    __class__
+// Package:    __pkgname__
 // Class:      __class__
 //
-/**
-
-
-*/
 //-------------------------------------------------------------------------------------
-//\class __class__Producer __class__Producer.cc __subsys__/__class__/interface/__class__Producer.h
+//\class __class__Producer __class__Producer.cc __subsys__/__pkgname__/plugins/__class__Producer.h
 //\brief YOUR COMMENTS GO HERE
 //
 //
@@ -36,7 +31,7 @@
 #include "DataFormats/Common/interface/View.h"
 
 
-#include "skelsubsys/__class__/interface/__class__.h"
+#include "__subsys__/__pkgname__/plugins/__class__.h"
 
 
 namespace pat {

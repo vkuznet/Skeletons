@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    __class__
+// Package:    __pkgname__
 // Class:      __class__
 // 
-/**\class __class__ __class__.h __subsys__/__class__/interface/__class__.h
+/**\class __class__ __class__.cc __subsys__/__pkgname__/plugins/__class__.cc
 
  Description: [one line class summary]
 

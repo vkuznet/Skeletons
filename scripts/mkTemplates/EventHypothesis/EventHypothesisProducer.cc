@@ -1,4 +1,4 @@
-#include "__subsys__/__class__/interface/__class__Producer.h"
+#include "__subsys__/__plgname__/plugins/__class__Producer.h"
 
 #include <iostream>
 

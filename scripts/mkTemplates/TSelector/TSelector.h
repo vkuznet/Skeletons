@@ -1,11 +1,11 @@
-#ifndef __subsys_____class_____class___h
-#define __class___h
+#ifndef __subsys_____pkgname_____class___h
+#define __subsys_____pkgname_____class___h
 // -*- C++ -*-
 //
-// Package:    __class__
+// Package:    __pkgname__
 // Class:      __class__
 // 
-/**\class __class__ __class__.h __subsys__/__class__/src/__class__.h
+/**\class __class__ __class__.h __subsys__/__pkgname__/plugins/__class__.h
 
 Description: [one line class summary]
 
@@ -13,9 +13,9 @@ Implementation:
 [Notes on implementation]
 */
 //
-// Original Author:  John Doe
-//         Created:  day-mon-xx
-// RCS(Id)
+// Original Author:  __author__
+//         Created:  __date__
+// __rcsid__
 //
 //
 #include <TH1.h>

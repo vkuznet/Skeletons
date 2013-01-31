@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    __class__
+// Package:    __pkgname__
 // Class:      __class__
 // 
-/**\class __class__ __class__.cc __subsys__/__class__/src/__class__.cc
+/**\class __class__ __class__.cc __subsys__/__pkgname__/plugins/__class__.cc
 
  Description: [one line class summary]
 
@@ -11,9 +11,9 @@
      [Notes on implementation]
 */
 //
-// Original Author:  John Doe
-//         Created:  day-mon-xx
-// RCS(Id)
+// Original Author:  __author__
+//         Created:  __date__
+// __rcsid__
 //
 //
 

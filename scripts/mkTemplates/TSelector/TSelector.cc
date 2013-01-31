@@ -1,6 +1,6 @@
 // -*- C++ -*-
 //
-// Package:    __class__
+// Package:    __pkgname__
 // Class:      __class__
 // 
 /*
@@ -24,7 +24,7 @@
 
 #include "TCanvas.h"
 // user include files
-#include "__subsys__/__class__/src/__class__.h"
+#include "__subsys__/__pkgname__/plugins/__class__.h"
 #include "DataFormats/Common/interface/Handle.h"
 #include "FWCore/Framework/interface/Event.h"
 

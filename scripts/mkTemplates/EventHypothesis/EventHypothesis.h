@@ -1,9 +1,8 @@
 #ifndef __class___h
 #define __class___h
 // -*- C++ -*-
-//// -*- C++ -*-
 //
-// Package:    __class__
+// Package:    __pkgname__
 // Class:      __class__
 //
 /**
@@ -11,7 +10,7 @@
 
 */
 //-------------------------------------------------------------------------------------
-//\class __class__ __class__.cc __subsys__/__class__/interface/__class__.h
+//\class __class__ __class__.cc __subsys__/__plugins__/plugins/__class__.h
 //\brief YOUR COMMENTS GO HERE
 //
 //

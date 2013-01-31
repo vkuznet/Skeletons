@@ -1,4 +1,4 @@
-#include "__subsys__/__class__/interface/__class__.h"
+#include "__subsys__/__pkgname__/plugins/__class__.h"
 
 #include <iostream>
 
