@@ -77,6 +77,49 @@ class TestCommand(Command):
             raise
         test = TextTestRunner(verbosity = 2)
         test.run(tests)
+        # run integration tests
+        print "run integration tests"
+        cdir = os.getcwd()
+        base = os.path.join(os.getcwd(), 'int_tests')
+        wdir = os.path.join(base, 'src/SubSystem')
+        sdir = os.path.join(os.getcwd(), 'scripts')
+        tdir = os.path.join(sdir, 'mkTemplates')
+        os.environ['CMSSW_BASE'] = base
+        if  os.path.isdir(base):
+            shutil.rmtree(base)
+        os.makedirs(wdir)
+        os.chdir(wdir)
+        for pkg in os.listdir(tdir):
+            test_pkg = 'My%s' % pkg
+            script = find_script(sdir, pkg)
+            if  script.find('mktmpl') != -1:
+                cmd = '%s/%s --name=%s' % (sdir, script, test_pkg)
+            else:
+                cmd = '%s/%s %s' % (sdir, script, test_pkg)
+            print cmd
+            subprocess.call(cmd, shell=True)
+            if  pkg in ['Record', 'Skeleton']:
+                for fname in os.listdir(os.getcwd()):
+                    print fname
+                    os.remove(fname)
+            else:
+                for root, dirs, files in os.walk(test_pkg):
+                    print root
+                    for fname in files:
+                        print '   ', fname
+                shutil.rmtree(test_pkg)
+        if  os.path.isdir(base):
+            shutil.rmtree(base)
+        os.chdir(cdir)
+
+def find_script(sdir, pkg):
+    "Find CMS mk-script for given template package"
+    scripts = os.listdir(sdir)
+    for idx in range(4, 1, -1):
+        for scr in scripts:
+            if  scr[:idx+2] == 'mk%s' % pkg.lower()[:idx]:
+                return scr
+    return "mktmpl --tmpl=%s" % pkg
 
 class CleanCommand(Command):
     "Class which clean-up all pyc files"
