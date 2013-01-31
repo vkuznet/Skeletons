@@ -280,7 +280,7 @@ class AbstractPkg(object):
             msg  = 'New %s "%s" of %s type is successfully generated' \
                     % (what, self.config.get('pname'), self.tmpl)
         else:
-            kwds.update({'dir': os.getcwd()})
+            kwds.update({'%s_dir' % ftype: os.getcwd()})
             getattr(self, '%s_files' % ftype)(kwds)
             msg = 'Generated %s file(s)' % ftype
         print msg
