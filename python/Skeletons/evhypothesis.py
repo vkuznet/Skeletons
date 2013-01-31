@@ -16,6 +16,8 @@ class EventHypothesis(AbstractPkg):
     def __init__(self, config=None):
         if  not config:
             config = {}
+        dirs = ['doc', 'plugins', 'python', 'test']
+        config.update({'dirs':dirs})
         AbstractPkg.__init__(self, config)
         
     def cpp_files(self, kwds=None):
@@ -24,4 +26,4 @@ class EventHypothesis(AbstractPkg):
                 self.get_tmpl('.cc') + self.get_tmpl('.h'))
         pkgname = self.config.get('pname')
         kwds.update({'__class__': pkgname, '__name__': pkgname})
-        self.gen_files('src', sources, kwds)
+        self.gen_files('plugins', sources, kwds)

@@ -16,6 +16,8 @@ class ESProducer(AbstractPkg):
     def __init__(self, config=None):
         if  not config:
             config = {}
+        dirs = ['doc', 'plugins', 'python', 'test']
+        config.update({'dirs':dirs})
         AbstractPkg.__init__(self, config)
         
     def cpp_files(self, kwds):
@@ -24,4 +26,5 @@ class ESProducer(AbstractPkg):
         if  not args:
             args = {'__record__': 'MyRecord', '__datatypes__': ['MyData']}
         kwds.update(args)
+        kwds.update({'cpp_dir': 'plugins'}) # location for cpp files
         return super(ESProducer, self).cpp_files(kwds)

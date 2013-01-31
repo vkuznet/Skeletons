@@ -16,6 +16,8 @@ class TSelector(AbstractPkg):
     def __init__(self, config=None):
         if  not config:
             config = {}
+        dirs = ['doc', 'plugins', 'python', 'test']
+        config.update({'dirs':dirs})
         AbstractPkg.__init__(self, config)
         
     def cpp_files(self, kwds=None):
@@ -25,7 +27,7 @@ class TSelector(AbstractPkg):
                 self.get_tmpl('.xml'))
         pkgname = self.config.get('pname')
         kwds.update({'__class__': pkgname, '__name__': pkgname})
-        self.gen_files('src', sources, kwds)
+        self.gen_files('plugins', sources, kwds)
 
     def header_files(self, kwds=None):
         "Generate header files"

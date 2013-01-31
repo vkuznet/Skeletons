@@ -20,7 +20,6 @@ class Skeleton(AbstractPkg):
     def __init__(self, config=None):
         if  not config:
             config = {}
-        config.update({'dirs': ['.']})
         AbstractPkg.__init__(self, config)
         
     def dir_structure(self):
