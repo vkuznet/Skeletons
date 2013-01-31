@@ -41,7 +41,7 @@ class testUtils(unittest.TestCase):
 
     def test_get_code_generator(self):
         "Test get_code_generator function"
-        kwds   = {'author': '', 'tmpl': 'EDProducer', 'pname':'MyProd',
+        kwds   = {'author': '', 'tmpl': 'c++11', 'pname':'MyProd',
                   'args': {}, 'debug': False, 'tmpl_dir': ''}
         obj = get_code_generator(kwds)
         result = str(type(obj))
