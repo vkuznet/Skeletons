@@ -9,6 +9,7 @@ Description: generates EDLooper CMSSW infrastructure
 """
 
 # system modules
+import os
 import sys
 
 # package modules
@@ -29,5 +30,8 @@ class EDLooper(AbstractPkg):
         if  not args:
             args  = {'__datatypes__': ['MyData']}
         kwds.update(args)
-        kwds.update({'cpp_dir':'plugins'}) # location of cpp files
+        if  not kwds.has_key('cpp_dir'):
+            kwds.update({'cpp_dir':'plugins'}) # location of cpp files
+        else: # call within SubSystem/Package/plugins area
+            kwds.update({'__pkgname__': os.getcwd().split('/')[-2]})
         return super(EDLooper, self).cpp_files(kwds)
