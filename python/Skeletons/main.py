@@ -14,7 +14,7 @@ import pprint
 from optparse import OptionParser
 
 # package modules
-from Skeletons.utils import get_code_generator, test_env
+from Skeletons.utils import code_generator, test_env
 
 if  sys.version_info < (2, 6):
     raise Exception("This script requires python 2.6 or greater")
@@ -95,7 +95,7 @@ def generator():
         config.update({'tmpl_etags': etags})
     else:
         config.update({'tmpl_etags': []})
-    obj = get_code_generator(config)
+    obj = code_generator(config)
     if  opts.etags:
         obj.print_etags()
         sys.exit(0)

@@ -1,0 +1,5 @@
+plugins/BuildFile.tmpl
+plugins/EDLooper.cc
+python
+test
+doc

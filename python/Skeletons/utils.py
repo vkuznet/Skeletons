@@ -93,7 +93,7 @@ capture()\n"""
     # located generated function object, run it and return its results
     return namespace['capture']()
 
-def get_user_info(ainput=None):
+def user_info(ainput=None):
     "Return user name and office location, based on UNIX finger"
     if  ainput:
         return ainput
@@ -101,7 +101,7 @@ def get_user_info(ainput=None):
     author = pwdstr.pw_gecos
     return author
 
-def get_code_generator(kwds):
+def code_generator(kwds):
     """
     Code generator function, parse user arguments, load and
     return appropriate template generator module.
@@ -121,3 +121,37 @@ def get_code_generator(kwds):
             print "%s, will use %s" % (str(err), klass)
     obj = getattr(module, klass)(kwds)
     return obj
+
+def tree(idir):
+    "Print directory content, similar to tree UNIX command"
+    if  idir[-1] == '/':
+        idir = idir[-1]
+    dsep = ''
+    fsep = ''
+    dtot = -1 # we'll not count initial directory
+    ftot = 0
+    for root, dirs, files in os.walk(idir):
+        dirs  = root.split('/')
+        ndirs = len(dirs)
+        if  ndirs > 1:
+            dsep  = '|  '*(ndirs-1)
+        print '%s%s/' % (dsep, dirs[-1])
+        dtot += 1
+        for fname in files:
+            fsep = dsep + '|--'
+            print '%s %s' % (fsep, fname)
+            ftot += 1
+    if  dtot == -1 or not dtot:
+        dmsg = ''
+    else:
+        dmsg = '%s directories,' % dtot
+    if  ftot:
+        fmsg = '%s file' % ftot
+        if  ftot > 1:
+            fmsg += 's'
+    else:
+        fmsg = ''
+    if  dmsg and fmsg:
+        print "Total: %s %s" % (dmsg, fmsg)
+    else:
+        print "No directories/files in %s" % idir

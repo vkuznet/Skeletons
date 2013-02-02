@@ -12,7 +12,7 @@ import os
 import sys
 
 # package modules
-from Skeletons.utils import get_code_generator, get_user_info
+from Skeletons.utils import code_generator
 
 def config(tmpl, pkg_help, tmpl_dir):
     "Parse input arguments to mk-script"
@@ -71,27 +71,32 @@ def test_cms_environment(tmpl):
     dirs = ldir.split('/')
     # test if we're within CMSSW_BASE/src/SubSystem area
     if  ldir and ldir[0] == '/' and len(dirs) == 2:
-        return 'subsystem'
+        return 'subsystem', ldir
     # test if we're within CMSSW_BASE/src/SubSystem/src area
     if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'src':
-        return 'src'
+        return 'src', ldir
     # test if we're within CMSSW_BASE/src/SubSystem/plugin area
     if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'plugins':
-        return 'plugins'
-    return False
+        return 'plugins', ldir
+    return False, ldir
 
 def generate(kwds):
     "Run generator code based on provided set of arguments"
     config = dict(kwds)
     tmpl   = kwds.get('tmpl')
-    if  tmpl not in ['Record', 'Skeleton']:
-        whereami = test_cms_environment(tmpl)
+    stand_alone_group = ['Record', 'Skeleton']
+    config.update({'not_in_dir': stand_alone_group})
+    if  tmpl not in stand_alone_group:
+        whereami, ldir = test_cms_environment(tmpl)
+        dirs = ldir.split('/')
+        config.update({'subsystem': dirs[1]})
         if  whereami in ['src', 'plugins']:
-            config.update({'ftype': 'cpp'})
+            config.update({'tmpl_files': '.cc'})
+            config.update({'pkgname': dirs[2]})
         elif whereami == 'subsystem':
-            config.update({'ftype': 'all'})
+            config.update({'tmpl_files': 'all'})
         else:
             print cms_error()
             sys.exit(1)
-    obj = get_code_generator(config)
+    obj = code_generator(config)
     obj.generate()

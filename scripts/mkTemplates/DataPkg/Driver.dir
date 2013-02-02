@@ -1,0 +1,5 @@
+plugins/BuildFile.tmpl
+src/classes.h
+src/classes_def.xml
+test
+doc

@@ -1,4 +1,4 @@
-.TH "SKELETONS" "1" "January 30, 2013" "development" "Skeletons"
+.TH "SKELETONS" "1" "February 02, 2013" "development" "Skeletons"
 .SH NAME
 skeletons \- Skeletons Documentation
 .
@@ -148,14 +148,13 @@ to fullfill the following requirements:
 create a new package in Skeletons/src/python/Skeletons/templates area,
 e.g. MyPackage
 .IP \(bu 2
-place any type template inside your package, e.g.
+place any type of file (your template) inside your package, e.g.
 MyPackage/MyPackage.cc
 .IP \(bu 2
-write your template according to Skeletons rules (see below)
+write your template according to Skeletons rules, see below
 .IP \(bu 2
-optionally create a new python module in Skeletons/src/python/mypackage.py
-with class inherited from AbstractPkg with your implementation of rules,
-e.g. \fIclass MyPackage(AbstractPkg)\fP, see below for comlpete examples
+optionally create Driver.dir file with layout of your new package
+directories, see below
 .UNINDENT
 .UNINDENT
 .UNINDENT
@@ -211,20 +210,59 @@ std::shared_ptr<double> pdouble;
 Event though we do not impose any restriction on tag naming convention it is
 wise to use them appropriately, e.g. for your C++ class template you are better
 use \fI__class__\fP and similar tag name conventions.
-.SS Implementation rules
+.SS Driver.dir file
 .sp
-To implement your own template class you need to create a new python module
-(possibly with the same name as your template package) and inherit its code
-from AbstractPkg class. We advocate to follow standard python conventions, i.e.
-module name should be lower case, e.g. mypackage.py, you match your python
-module name with your template package, e.g. mypackage.py should cover
-MyPackage template. Finally you implement some of the main template methods of
-the AbstractPkg class. They are cpp_files, python_files, test_files, etc.
-Please follow Skeletons rules to create your template and use reasonable
-template and example tags inside of your template. For example, when you write
-a C++ class it is appropriate to use template tags as \fI__class__\fP,
-\fI__header__\fP, while for any other type of template you may use their own
-language specific tags.
+In some cases you\(aqd like to generate your template according to some directory
+structure. To make this happens you need to place into your template package
+the \fIDriver.dir\fP file whose context should outline a final directory structure
+of generated package. For instance, let\(aqs say that your template package has
+source and header c++ files as well as Makefile:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+MyPackage.cc, MyPackage.h, Makefile
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+and you\(aqd like to create the following directory layout:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+MyPackage
+|\-\- Makefile
+|   include/
+|   |\-\- MyPackage.h
+|   src/
+|   |\-\- MyPackage.cc
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+To instruct Skeletons engine to generate such directory structure and put files
+in place you create \fIDriver.dir\fP inside of your package template with the
+following context:
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.nf
+.ft C
+Makefile
+incldue/MyPackage.h
+src/MyPackage.cc
+.ft P
+.fi
+.UNINDENT
+.UNINDENT
+.sp
+The Skeletons engine will use theis file, create include,
+src directories and place generated files in appropriate locations.
 .SH EXAMPLE
 .sp
 Let\(aqs create a new template package and call it MyPackage. We will create one
@@ -391,45 +429,8 @@ DEFINE_FWK_EVENTSETUP_MODULE(__class__);
 .UNINDENT
 .UNINDENT
 .sp
-For these two types of classes we implement the following mypackage.py module
-.SS mypackage.py module
-.INDENT 0.0
-.INDENT 3.5
-.sp
-.nf
-.ft C
-#!/usr/bin/env python
-#\-*\- coding: utf\-8 \-*\-
-#pylint: disable\-msg=
-
-"""MyPackage module"""
-
-# package modules
-from Skeletons.pkg import AbstractPkg
-
-class MyPackage(AbstractPkg):
-    "MyPackage implementation of AbstractPkg"
-    def __init__(self, config=None):
-        if  not config:
-            config = {}
-        AbstractPkg.__init__(self, config)
-
-    def cpp_files(self, kwds):
-        "Generate C++ files"
-        args = self.config.get(\(aqargs\(aq, None)
-        if  not args:
-            args = {\(aq__record__\(aq: \(aqMyRecord\(aq, \(aq__datatypes__\(aq: [\(aqMyData\(aq]}
-        kwds.update(args)
-        return super(ESProducer, self).cpp_files(kwds)
-.ft P
-.fi
-.UNINDENT
-.UNINDENT
-.sp
-We re\-write \fIcpp_files\fP method of AbstractPkg class with our own implementation
-details. We define the default tags values to be used in our template and let
-user code to pass them via command line arguments. Finally, we create mkmypkg
-shell script in Skeletons/bin area with the following context:
+Finally, we create mkmypkg shell script in Skeletons/bin area with the
+following context:
 .INDENT 0.0
 .INDENT 3.5
 .sp
@@ -523,39 +524,8 @@ which declares start and end of python block
 .UNINDENT
 .INDENT 7.0
 .TP
-.B build_file(btmpl=None)
-Create BuildFile from given template
-.UNINDENT
-.INDENT 7.0
-.TP
-.B cpp_files(kwds)
-Generate C++ files
-.UNINDENT
-.INDENT 7.0
-.TP
-.B dir_structure()
-Create dir structure for generated package
-.UNINDENT
-.INDENT 7.0
-.TP
-.B gen_files(dst, sources, kwds)
-Generage files at given destination from provided sources and
-replace given tags in template files.
-.UNINDENT
-.INDENT 7.0
-.TP
 .B generate()
-Main function
-.UNINDENT
-.INDENT 7.0
-.TP
-.B get_tmpl(ext)
-Retrieve template files for given extenstion
-.UNINDENT
-.INDENT 7.0
-.TP
-.B header_files(kwds)
-Generate header files
+Generate package templates in a given directory
 .UNINDENT
 .INDENT 7.0
 .TP
@@ -575,16 +545,6 @@ Print out template keys
 .UNINDENT
 .INDENT 7.0
 .TP
-.B python_files(kwds)
-Generate python files
-.UNINDENT
-.INDENT 7.0
-.TP
-.B test_files(kwds)
-Generate test files
-.UNINDENT
-.INDENT 7.0
-.TP
 .B tmpl_etags()
 Scan template files and return example tags
 .UNINDENT
@@ -593,6 +553,11 @@ Scan template files and return example tags
 .B tmpl_tags()
 Scan template files and return template tags
 .UNINDENT
+.INDENT 7.0
+.TP
+.B write(fname, tmpl_name, kwds)
+Create new file from given template name and set of arguments
+.UNINDENT
 .UNINDENT
 .sp
 File       : utils.py
@@ -600,21 +565,16 @@ Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
 Description: Utilities module
 .INDENT 0.0
 .TP
-.B Skeletons.utils.functor(code, kwds, debug=0)
-Auto\-generate and execute function with given code and configuration
-For details of compile/exec/eval see
-\fI\%http://lucumr.pocoo.org/2011/2/1/exec-in-python/\fP
-.UNINDENT
-.INDENT 0.0
-.TP
-.B Skeletons.utils.get_code_generator(kwds)
+.B Skeletons.utils.code_generator(kwds)
 Code generator function, parse user arguments, load and
 return appropriate template generator module.
 .UNINDENT
 .INDENT 0.0
 .TP
-.B Skeletons.utils.get_user_info(ainput=None)
-Return user name and office location, based on UNIX finger
+.B Skeletons.utils.functor(code, kwds, debug=0)
+Auto\-generate and execute function with given code and configuration
+For details of compile/exec/eval see
+\fI\%http://lucumr.pocoo.org/2011/2/1/exec-in-python/\fP
 .UNINDENT
 .INDENT 0.0
 .TP
@@ -627,114 +587,15 @@ Parse word which contas double underscore tag
 Test user environment, look\-up if user has run cmsenv, otherwise
 provide meaningful error message back to the user.
 .UNINDENT
-.sp
-File       : datapkg.py
-Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
-Description: generates DataPkg CMSSW infrastructure
 .INDENT 0.0
 .TP
-.B class Skeletons.datapkg.DataPkg(config=None)
-DataPkg implementation of AbstractPkg
-.INDENT 7.0
-.TP
-.B cpp_files(kwds=None)
-Generate C++ files
+.B Skeletons.utils.tree(idir)
+Print directory content, similar to tree UNIX command
 .UNINDENT
-.UNINDENT
-.sp
-File       : edlooper.py
-Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
-Description: generates EDLooper CMSSW infrastructure
 .INDENT 0.0
 .TP
-.B class Skeletons.edlooper.EDLooper(config=None)
-EDLooper implementation of AbstractPkg
-.INDENT 7.0
-.TP
-.B cpp_files(kwds)
-Generate C++ files
-.UNINDENT
-.UNINDENT
-.sp
-File       : esproducer.py
-Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
-Description: generates ESProducer CMSSW infrastructure
-.INDENT 0.0
-.TP
-.B class Skeletons.esproducer.ESProducer(config=None)
-ESProducer implementation of AbstractPkg
-.INDENT 7.0
-.TP
-.B cpp_files(kwds)
-Generate C++ files
-.UNINDENT
-.UNINDENT
-.sp
-File       : record.py
-Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
-Description: generates Record CMSSW infrastructure
-.INDENT 0.0
-.TP
-.B class Skeletons.record.Record(config=None)
-Record implementation of AbstractPkg
-.INDENT 7.0
-.TP
-.B cpp_files(kwds)
-Generate C++ files
-.UNINDENT
-.INDENT 7.0
-.TP
-.B dir_structure()
-Generate directory structure
-.UNINDENT
-.INDENT 7.0
-.TP
-.B header_files(kwds)
-Generate header files
-.UNINDENT
-.UNINDENT
-.sp
-File       : skeleton.py
-Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
-Description: generates Skeleton CMSSW infrastructure
-.INDENT 0.0
-.TP
-.B class Skeletons.skeleton.Skeleton(config=None)
-Skeleton implementation of AbstractPkg
-.INDENT 7.0
-.TP
-.B cpp_files(kwds)
-Generate C++ files
-.UNINDENT
-.INDENT 7.0
-.TP
-.B dir_structure()
-Generate directory structure
-.UNINDENT
-.INDENT 7.0
-.TP
-.B header_files(kwds)
-Generate header files
-.UNINDENT
-.UNINDENT
-.sp
-File       : tselector.py
-Author     : Valentin Kuznetsov <\fI\%vkuznet@gmail.com\fP>
-Description: generates TSelector CMSSW infrastructure
-.INDENT 0.0
-.TP
-.B class Skeletons.tselector.TSelector(config=None)
-TSelector implementation of AbstractPkg
-.INDENT 7.0
-.TP
-.B cpp_files(kwds=None)
-Generate C++ files
-.UNINDENT
-.INDENT 7.0
-.TP
-.B header_files(kwds=None)
-Generate header files
-.UNINDENT
+.B Skeletons.utils.user_info(ainput=None)
+Return user name and office location, based on UNIX finger
 .UNINDENT
 .INDENT 0.0
 .IP \(bu 2

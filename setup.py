@@ -31,18 +31,11 @@ from distutils.command.install import INSTALL_SCHEMES
 # e.g. it can be done in DataProvider/__init__.py
 sys.path.append(os.path.join(os.getcwd(), 'python'))
 try:
-    from DataProvider import version as dp_version
+    from Skeletons import version as skl_version
 except:
-    dp_version = 'development' # some default
+    skl_version = 'development' # some default
 
 required_python_version = '2.6'
-if sys.platform == 'win32' and sys.version_info > (2, 6):
-   # 2.6's distutils.msvc9compiler can raise an IOError when failing to
-   # find the compiler
-   build_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError,
-                 IOError)
-else:
-   build_errors = (CCompilerError, DistutilsExecError, DistutilsPlatformError)
 
 class TestCommand(Command):
     "Class to handle unit tests"
@@ -90,23 +83,21 @@ class TestCommand(Command):
         os.makedirs(wdir)
         os.chdir(wdir)
         for pkg in os.listdir(tdir):
-            test_pkg = 'My%s' % pkg
+            if  pkg == 'c++11':
+                test_pkg = 'Mycpp'
+            else:
+                test_pkg = 'My%s' % pkg
             script = find_script(sdir, pkg)
             if  script.find('mktmpl') != -1:
                 cmd = '%s/%s --name=%s' % (sdir, script, test_pkg)
             else:
                 cmd = '%s/%s %s' % (sdir, script, test_pkg)
-            print cmd
+            print '\n###', cmd
             subprocess.call(cmd, shell=True)
             if  pkg in ['Record', 'Skeleton']:
                 for fname in os.listdir(os.getcwd()):
-                    print fname
                     os.remove(fname)
             else:
-                for root, dirs, files in os.walk(test_pkg):
-                    print root
-                    for fname in files:
-                        print '   ', fname
                 shutil.rmtree(test_pkg)
         if  os.path.isdir(base):
             shutil.rmtree(base)
@@ -173,32 +164,6 @@ class DocCommand(Command):
         subprocess.call('make man', shell=True)
         os.chdir(cdir)
 
-class BuildExtCommand(build_ext):
-    "Build C-extentions"
-
-    def initialize_options(self):
-        "Init method"
-        pass
-
-    def finalize_options(self):
-        "Finalize method"
-        pass
-
-    def run(self):
-        "Run method"
-        try:
-            build_ext.run(self)
-        except DistutilsPlatformError as exp:
-            print exp
-            print "Could not compile extension module"
-
-    def build_extension(self, ext):
-        "Build extension method"
-        try:
-            build_ext.build_extension(self, ext)
-        except build_errors:
-            print "Could not compile %s" % ext.name
-
 def dirwalk(relativedir):
     "Walk a directory tree and look-up for __init__.py files"
     idir = os.path.join(os.getcwd(), relativedir)
@@ -252,7 +217,7 @@ def install_prefix(idir=None):
 
 def main():
     "Main function"
-    version      = dp_version
+    version      = skl_version
     name         = "Skeletons"
     description  = "Skeletons description"
     url          = "Skeletons URL"
@@ -302,8 +267,7 @@ def main():
         requires             = ['python (>=2.6)'],
         classifiers          = classifiers,
         ext_modules          = extentions,
-        cmdclass             = {'build_ext': BuildExtCommand,
-                                'test': TestCommand,
+        cmdclass             = {'test': TestCommand,
                                 'clean': CleanCommand,
                                 'doc': DocCommand},
         author               = author,

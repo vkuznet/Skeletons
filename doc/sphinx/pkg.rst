@@ -10,12 +10,11 @@ to fullfill the following requirements:
 
     - create a new package in Skeletons/src/python/Skeletons/templates area,
       e.g. MyPackage
-    - place any type template inside your package, e.g.
+    - place any type of file (your template) inside your package, e.g.
       MyPackage/MyPackage.cc
-    - write your template according to Skeletons rules (see below)
-    - optionally create a new python module in Skeletons/src/python/mypackage.py
-      with class inherited from AbstractPkg with your implementation of rules,
-      e.g. `class MyPackage(AbstractPkg)`, see below for comlpete examples
+    - write your template according to Skeletons rules, see below
+    - optionally create Driver.dir file with layout of your new package
+      directories, see below
 
 Skeletons rules
 ---------------
@@ -60,18 +59,39 @@ Event though we do not impose any restriction on tag naming convention it is
 wise to use them appropriately, e.g. for your C++ class template you are better
 use `__class__` and similar tag name conventions.
 
-Implementation rules
---------------------
+Driver.dir file
+---------------
 
-To implement your own template class you need to create a new python module
-(possibly with the same name as your template package) and inherit its code
-from AbstractPkg class. We advocate to follow standard python conventions, i.e.
-module name should be lower case, e.g. mypackage.py, you match your python
-module name with your template package, e.g. mypackage.py should cover
-MyPackage template. Finally you implement some of the main template methods of
-the AbstractPkg class. They are cpp_files, python_files, test_files, etc.
-Please follow Skeletons rules to create your template and use reasonable
-template and example tags inside of your template. For example, when you write
-a C++ class it is appropriate to use template tags as `__class__`,
-`__header__`, while for any other type of template you may use their own
-language specific tags.
+In some cases you'd like to generate your template according to some directory
+structure. To make this happens you need to place into your template package
+the `Driver.dir` file whose context should outline a final directory structure
+of generated package. For instance, let's say that your template package has
+source and header c++ files as well as Makefile:
+
+.. code::
+
+    MyPackage.cc, MyPackage.h, Makefile
+
+and you'd like to create the following directory layout:
+
+.. code::
+
+    MyPackage
+    |-- Makefile
+    |   include/
+    |   |-- MyPackage.h
+    |   src/
+    |   |-- MyPackage.cc
+
+To instruct Skeletons engine to generate such directory structure and put files
+in place you create `Driver.dir` inside of your package template with the
+following context:
+
+.. code::
+
+    Makefile
+    incldue/MyPackage.h
+    src/MyPackage.cc
+
+The Skeletons engine will use theis file, create include,
+src directories and place generated files in appropriate locations.

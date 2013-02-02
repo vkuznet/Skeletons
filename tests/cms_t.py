@@ -24,7 +24,7 @@ class testCMS(unittest.TestCase):
         self.cdir = os.getcwd()
         self.cmssw_base = '%s/test_tmp' % self.cdir
         os.makedirs(os.path.join(self.cmssw_base, 'src/SubSystem/MyProd/src'))
-        os.makedirs(os.path.join(self.cmssw_base, 'src/SubSystem/MyProd/plugin'))
+        os.makedirs(os.path.join(self.cmssw_base, 'src/SubSystem/MyProd/plugins'))
 
     def tearDown(self):
         "tear down"
@@ -35,29 +35,29 @@ class testCMS(unittest.TestCase):
         "Test test_cms_environment function"
         os.chdir(self.cdir)
 
-        expect = False
+        expect = False, os.getcwd()
         result = test_cms_environment('EDProducer')
         self.assertEqual(expect, result)
 
         os.environ['CMSSW_BASE'] = self.cmssw_base
 
         os.chdir(os.path.join(self.cmssw_base, 'src/SubSystem'))
-        expect = 'subsystem'
+        expect = 'subsystem', '/SubSystem'
         result = test_cms_environment('EDProducer')
         self.assertEqual(expect, result)
 
         os.chdir(os.path.join(self.cmssw_base, 'src/SubSystem/MyProd'))
-        expect = False
+        expect = False, '/SubSystem/MyProd'
         result = test_cms_environment('EDProducer')
         self.assertEqual(expect, result)
 
         os.chdir(os.path.join(self.cmssw_base, 'src/SubSystem/MyProd/src'))
-        expect = 'src'
+        expect = 'src', '/SubSystem/MyProd/src'
         result = test_cms_environment('EDProducer')
         self.assertEqual(expect, result)
 
-        os.chdir(os.path.join(self.cmssw_base, 'src/SubSystem/MyProd/plugin'))
-        expect = 'plugin'
+        os.chdir(os.path.join(self.cmssw_base, 'src/SubSystem/MyProd/plugins'))
+        expect = 'plugins', '/SubSystem/MyProd/plugins'
         result = test_cms_environment('EDProducer')
         self.assertEqual(expect, result)
 

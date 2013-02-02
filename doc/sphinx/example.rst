@@ -135,41 +135,8 @@ MyPackage.cc example
     //define this as a plug-in
     DEFINE_FWK_EVENTSETUP_MODULE(__class__);
 
-For these two types of classes we implement the following mypackage.py module
-
-mypackage.py module
--------------------
-
-.. code::
-
-    #!/usr/bin/env python
-    #-*- coding: utf-8 -*-
-    #pylint: disable-msg=
-
-    """MyPackage module"""
-
-    # package modules
-    from Skeletons.pkg import AbstractPkg
-
-    class MyPackage(AbstractPkg):
-        "MyPackage implementation of AbstractPkg"
-        def __init__(self, config=None):
-            if  not config:
-                config = {}
-            AbstractPkg.__init__(self, config)
-            
-        def cpp_files(self, kwds):
-            "Generate C++ files"
-            args = self.config.get('args', None)
-            if  not args:
-                args = {'__record__': 'MyRecord', '__datatypes__': ['MyData']}
-            kwds.update(args)
-            return super(ESProducer, self).cpp_files(kwds) 
-
-We re-write `cpp_files` method of AbstractPkg class with our own implementation
-details. We define the default tags values to be used in our template and let
-user code to pass them via command line arguments. Finally, we create mkmypkg
-shell script in Skeletons/bin area with the following context:
+Finally, we create mkmypkg shell script in Skeletons/bin area with the
+following context:
 
 .. code::
 

@@ -8,9 +8,10 @@ Skeletons.utils unit tests
 # system modules
 import sys
 import unittest
+import tempfile
 
 # package modules
-from Skeletons.utils import parse_word, functor, get_code_generator
+from Skeletons.utils import parse_word, functor, code_generator
 
 class testUtils(unittest.TestCase):
     "A test class"
@@ -39,20 +40,13 @@ class testUtils(unittest.TestCase):
         expect = '\n'.join([str(i) for i in data]) + '\n'
         self.assertEqual(expect, result)
 
-    def test_get_code_generator(self):
-        "Test get_code_generator function"
+    def test_code_generator(self):
+        "Test code_generator function"
         kwds   = {'author': '', 'tmpl': 'c++11', 'pname':'MyProd',
                   'args': {}, 'debug': False, 'tmpl_dir': ''}
-        obj = get_code_generator(kwds)
+        obj = code_generator(kwds)
         result = str(type(obj))
         expect = """<class 'Skeletons.pkg.AbstractPkg'>"""
-        self.assertEqual(expect, result)
-
-        kwds   = {'author': '', 'tmpl': 'TSelector', 'pname':'MyProd',
-                  'args': {}, 'debug': False, 'tmpl_dir': ''}
-        obj = get_code_generator(kwds)
-        result = str(type(obj))
-        expect = """<class 'Skeletons.tselector.TSelector'>"""
         self.assertEqual(expect, result)
 #
 # main

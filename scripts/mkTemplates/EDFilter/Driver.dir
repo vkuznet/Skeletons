@@ -1,0 +1,5 @@
+plugins/BuildFile.tmpl
+plugins/EDFilter.cc
+python
+test
+doc

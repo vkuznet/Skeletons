@@ -16,7 +16,7 @@ import time
 import pprint
 
 # package modules
-from Skeletons.utils import parse_word, functor, get_user_info
+from Skeletons.utils import parse_word, functor, user_info, tree
 
 class AbstractPkg(object):
     """
@@ -41,16 +41,14 @@ class AbstractPkg(object):
             self.config = {}
         else:
             self.config = config
-        dirs = ['doc', 'interface', 'python', 'src', 'test']
-        if  not self.config.has_key('dirs'):
-            self.config.update({'dirs': dirs})
         self.pname  = self.config.get('pname', None)
         self.tmpl   = self.config.get('tmpl', None)
         self.debug  = self.config.get('debug', 0)
         self.tdir   = self.config.get('tmpl_dir')
-        self.author = get_user_info(self.config.get('author', None))
+        self.author = user_info(self.config.get('author', None))
         self.date   = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
         self.rcsid  = '$Id$'
+        self.not_in_dir = self.config.get('not_in_dir', [])
         
     def tmpl_etags(self):
         "Scan template files and return example tags"
@@ -91,52 +89,6 @@ class AbstractPkg(object):
         for key in self.tmpl_tags():
             print key
 
-    def dir_structure(self):
-        "Create dir structure for generated package"
-        if  self.debug:
-            print "\nCall dir_structure"
-        cdir = os.getcwd()
-        if  os.path.isdir(self.pname):
-            print "Package '%s' already exists in '%s'" \
-                    % (self.pname, cdir)
-            sys.exit(1)
-        else:
-            os.makedirs(self.pname)
-            os.chdir(self.pname)
-        for sdir in self.config.get('dirs'):
-            if  not os.path.isdir(sdir):
-                os.makedirs(sdir)
-
-    def build_file(self, btmpl=None):
-        "Create BuildFile from given template"
-        if  self.debug:
-            print "\nCall build_file"
-        if  btmpl:
-            with open('BuildFile.xml', 'w') as stream:
-                stream.write(btmpl)
-            return
-        bname = '%s/%s/BuildFile.tmpl' % (self.tdir, self.tmpl)
-        if  self.debug:
-            print "Read", bname
-        if  not os.path.isfile(bname):
-            return
-        btmpl = open(bname, 'r').read()
-        bfile = ""
-        for line in btmpl.split('\n'):
-            line = self.parse_etags(line)
-            if  not line:
-                continue
-            bfile += line + '\n'
-        with open('BuildFile.xml', 'w') as stream:
-            stream.write(bfile)
-
-    def get_tmpl(self, ext):
-        "Retrieve template files for given extenstion"
-        sdir = '%s/%s' % (self.tdir, self.tmpl)
-        sources = [s for s in os.listdir(sdir) \
-                if os.path.splitext(s)[-1] == ext]
-        return sources
-
     def parse_etags(self, line):
         """
         Determine either skip or keep given line based on class tags 
@@ -157,130 +109,113 @@ class AbstractPkg(object):
                     return line
         return line
 
-    def gen_files(self, dst, sources, kwds):
-        """
-        Generage files at given destination from provided sources and
-        replace given tags in template files.
-        """
-        if  not kwds:
-            kwds = {}
-        # add author/date/rcsid tags
-        subsys = os.getcwd().split('/')[-3]
-        kwds.update({'__author__': self.author,
-                     '__date__': self.date,
-                     '__class__': self.pname,
-                     '__name__': self.pname,
-                     '__rcsid__': self.rcsid,
-                     '__subsys__': subsys})
+    def write(self, fname, tmpl_name, kwds):
+        "Create new file from given template name and set of arguments"
+        code = ""
+        read_code = False
+        with open(fname, 'w') as stream:
+            for line in open(tmpl_name, 'r').readlines():
+                line = self.parse_etags(line)
+                if  not line:
+                    continue
+                if  line.find('#python_begin') != -1:
+                    read_code = True
+                    continue
+                if  line.find('#python_end') != -1:
+                    read_code = False
+                if  read_code:
+                    code += line
+                if  code and not read_code:
+                    res   = functor(code, kwds, self.debug)
+                    stream.write(res)
+                    code  = ""
+                    continue
+                if  not read_code:
+                    for key, val in kwds.items():
+                        if  isinstance(val, basestring):
+                            line = line.replace(key, val)
+                    stream.write(line)
+
+    def generate(self):
+        "Generate package templates in a given directory"
+
+        # keep current location, since generate will switch directories
+        cdir = os.getcwd()
+
+        # read from configutation which template files to create
+        tmpl_files = self.config.get('tmpl_files', 'all')
+
+        # setup keyword arguments which we'll pass to write method
+        kwds  = {'__pkgname__': self.config.get('pkgname', self.pname),
+                 '__author__': self.author,
+                 '__date__': self.date,
+                 '__class__': self.pname,
+                 '__name__': self.pname,
+                 '__rcsid__': self.rcsid,
+                 '__subsys__': self.config.get('subsystem', self.pname)}
+        args = self.config.get('args', None)
+        kwds.update(args)
         if  self.debug:
             print "Template tags:"
             pprint.pprint(kwds)
-        sdir = '%s/%s' % (self.tdir, self.tmpl)
+
+        # create template package dir and cd into it
+        if  tmpl_files == 'all' and self.tmpl not in self.not_in_dir:
+            os.makedirs(self.pname)
+            os.chdir(self.pname)
+
+        # read directory driver information and create file list to generate
+        sdir    = os.path.join(self.tdir, self.tmpl)
+        sources = [s for s in os.listdir(sdir) \
+                if s != 'Driver.dir' and s.find('~') == -1]
+        driver  = os.path.join(sdir, 'Driver.dir')
+        if  os.path.isfile(driver):
+            sources = [s.replace('\n', '') for s in open(driver, 'r').readlines()]
+
+        # loop over source files, create dirs as necessary and generate files
+        # names for writing templates
+        gen_files = []
         for src in sources:
-            if  not os.path.isfile('%s/%s' % (sdir, src)):
-                continue
+            if  tmpl_files != 'all':
+                fname, ext = os.path.splitext(src)
+                if  tmpl_files != ext:
+                    continue
+                src = src.split('/')[-1]
             if  self.debug:
                 print "Read", src
-            name, ext = os.path.splitext(src)
-            name = name.replace(self.tmpl, self.pname) + ext
-            code = ""
-            read_code = False
-            with open('%s/%s' % (dst, name), 'w') as stream:
-                for line in open('%s/%s' % (sdir, src), 'r').readlines():
-                    line = self.parse_etags(line)
-                    if  not line:
-                        continue
-                    if  line.find('#python_begin') != -1:
-                        read_code = True
-                        continue
-                    if  line.find('#python_end') != -1:
-                        read_code = False
-                    if  read_code:
-                        code += line
-                    if  code and not read_code:
-                        res   = functor(code, kwds, self.debug)
-                        stream.write(res)
-                        code  = ""
-                        continue
-                    if  not read_code:
-                        for key, val in kwds.items():
-                            if  isinstance(val, basestring):
-                                line = line.replace(key, val)
-                        stream.write(line)
-
-    def make_files(self, kwds):
-        "Generate make files"
-        if  self.debug:
-            print "\nCall make_files"
-        sources = ['Makefile', 'Makefile.mk']
-        self.gen_files(os.getcwd(), sources, kwds)
-
-    def python_files(self, kwds):
-        "Generate python files"
-        if  self.debug:
-            print "\nCall python_files"
-        sources = kwds.get('python_files', self.get_tmpl('.py'))
-        self.gen_files(kwds.get('python_dir', 'python'), sources, kwds)
-
-    def cpp_files(self, kwds):
-        "Generate C++ files"
-        if  self.debug:
-            print "\nCall cpp_files"
-        sources = kwds.get('cpp_files', 
-                self.get_tmpl('.cc') + self.get_tmpl('.cpp') +
-                self.get_tmpl('.inl'))
-        self.gen_files(kwds.get('cpp_dir', 'src'), sources, kwds)
-
-    def test_files(self, kwds):
-        "Generate test files"
-        if  self.debug:
-            print "\nCall test_files"
-        sources = kwds.get('test_files', self.get_tmpl('.tst'))
-        self.gen_files(kwds.get('test_dir', 'test'), sources, kwds)
-
-    def header_files(self, kwds):
-        "Generate header files"
-        if  self.debug:
-            print "\nCall header_files"
-        sources = kwds.get('header_files', self.get_tmpl('.h'))
-        self.gen_files(kwds.get('header_dir', 'interface'), sources, kwds)
-
-    def doc_files(self, kwds):
-        "Generate doc files"
-        if  self.debug:
-            print "\nCall doc_files"
-        sources = kwds.get('doc_files', self.get_tmpl('.txt'))
-        self.gen_files(kwds.get('doc_dir', 'doc'), sources, kwds)
-
-    def generate(self):
-        "Main function"
-        if  self.debug:
-            print "\nCall generate"
-        kwds  = {'__pkgname__': self.pname}
-        ftype = self.config.get('ftype', 'all')
-        dirs  = self.config.get('dirs') + ['make']
-        if  ftype == 'all':
-            self.dir_structure()
-            self.build_file()
-            for elem in dirs:
-                # dir mapping to class methods, src means cpp_files, etc.
-                if  elem == 'plugins' or elem == 'src':
-                    elem = 'cpp'
-                if  elem == 'interface':
-                    elem = 'header'
-                try:
-                    getattr(self, '%s_files' % elem)(kwds)
-                except AttributeError as err:
-                    print str(err), type(err)
-                    msg  = 'Please extend Skeleton/pkg.py and provide '
-                    msg += '%s_files method implementation' % elem
-                    print msg
-                    sys.exit(1)
-            what = 'code' if self.tmpl in ['Record', 'Skeleton'] else 'package'
-            msg  = 'New %s "%s" of %s type is successfully generated' \
-                    % (what, self.config.get('pname'), self.tmpl)
+            items = src.split('/')
+            if  items[-1] == '/':
+                items = items[:-1]
+            tname     = items[-1] # template file name
+            tmpl_name = os.path.join(sdir, items[-1]) # full tmpl file name
+            if  os.path.isfile(tmpl_name):
+                ftype = 'file'
+            else:
+                ftype = 'dir'
+            name2gen  = src # new file we'll create
+            if  tname.split('.')[0] == self.tmpl: # need to substitute
+                name2gen  = name2gen.replace(self.tmpl, self.pname)
+            name2gen  = os.path.join(os.getcwd(), name2gen)
+            if  self.debug:
+                print "Create", name2gen
+            if  ftype == 'dir':
+                if  not os.path.isdir(name2gen):
+                    os.makedirs(name2gen)
+                continue # we're done with dir
+            fdir = os.path.dirname(name2gen)
+            if  not os.path.isdir(fdir):
+                os.makedirs(fdir)
+            self.write(name2gen, tmpl_name, kwds)
+            gen_files.append(name2gen.split('/')[-1])
+        if  tmpl_files == 'all' and self.tmpl not in self.not_in_dir:
+            msg  = 'New package "%s" of %s type is successfully generated' \
+                    % (self.pname, self.tmpl)
         else:
-            kwds.update({'%s_dir' % ftype: os.getcwd()})
-            getattr(self, '%s_files' % ftype)(kwds)
-            msg = 'Generated %s file(s)' % ftype
+            msg = 'Generated %s file' % ', '.join(gen_files)
+            if  len(gen_files) > 1:
+                msg += 's'
         print msg
+        # return back where we started
+        os.chdir(cdir)
+        if  msg.find('New package') != -1:
+            tree(self.pname)

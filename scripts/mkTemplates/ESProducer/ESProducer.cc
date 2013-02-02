@@ -41,10 +41,13 @@ class __class__ : public edm::ESProducer {
       ~__class__();
 
 #python_begin
-    datatypes = []
-    for dtype in __datatypes__:
-        datatypes.append("boost::shared_ptr<%s>" % dtype)
-    print "      typedef edm::ESProducts<%s> ReturnType;" % ','.join(datatypes)
+    if  len(__datatypes__) > 1:
+        datatypes = []
+        for dtype in __datatypes__:
+            datatypes.append("boost::shared_ptr<%s>" % dtype)
+        print "      typedef edm::ESProducts<%s> ReturnType;" % ','.join(datatypes)
+    elif len(__datatypes__) == 1:
+        print "      typedef boost::shared_ptr<%s> ReturnType;" % __datatypes__[0]
 #python_end
 
       ReturnType produce(const __record__&);

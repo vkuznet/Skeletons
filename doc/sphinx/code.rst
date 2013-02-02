@@ -12,22 +12,3 @@ Skeleton Core classes
 
 .. automodule:: Skeletons.utils
         :members:
-
-.. automodule:: Skeletons.datapkg
-        :members:
-
-.. automodule:: Skeletons.edlooper
-        :members:
-
-.. automodule:: Skeletons.esproducer
-        :members:
-
-.. automodule:: Skeletons.record
-        :members:
-
-.. automodule:: Skeletons.skeleton
-        :members:
-
-.. automodule:: Skeletons.tselector
-        :members:
-
