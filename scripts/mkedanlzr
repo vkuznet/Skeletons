@@ -42,8 +42,10 @@ def pkg_help():
     msg += '\n        mkedanlzr MyAnalyzer'
     msg += '\n        # create new EDAnalyzer code with given author'
     msg += '\n        mkedanlzr MyAnalyzer -author "First Last"'
-    msg += '\n        # create new EDAnalyzer code with myparticle example'
-    msg += '\n        mkedanlzr MyAnalyzer example_myparticle'
+    msg += '\n        # create new EDAnalyzer code with track example'
+    msg += '\n        mkedanlzr MyAnalyzer example_track'
+    msg += '\n        # create new EDAnalyzer code with histo example'
+    msg += '\n        mkedanlzr MyAnalyzer example_histo'
     msg += '\n'
     return msg
 

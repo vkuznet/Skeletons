@@ -12,3 +12,6 @@ Skeleton Core classes
 
 .. automodule:: Skeletons.utils
         :members:
+
+.. automodule:: Skeletons.cms
+        :members:

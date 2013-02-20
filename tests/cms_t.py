@@ -47,7 +47,7 @@ class testCMS(unittest.TestCase):
         self.assertEqual(expect, result)
 
         os.chdir(os.path.join(self.cmssw_base, 'src/SubSystem/MyProd'))
-        expect = False, '/SubSystem/MyProd'
+        expect = 'package', '/SubSystem/MyProd'
         result = test_cms_environment('EDProducer')
         self.assertEqual(expect, result)
 

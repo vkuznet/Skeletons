@@ -1,4 +1,4 @@
-BuildFile.tmpl
+BuildFile.xml
 interface/EventHypothesis.h
 src/EventHypothesis.cc
 interface/EventHypothesisProducer.h

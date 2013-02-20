@@ -61,23 +61,27 @@ def test_cms_environment(tmpl):
     Test CMS environment and requirements to run within CMSSW_BASE.
     Return True if we fullfill requirements and False otherwise.
     """
-    if  tmpl.lower() == 'skeleton':
-        return True
     base = os.environ.get('CMSSW_BASE', None)
     if  not base:
-        return False
+        return False, []
     cdir = os.getcwd()
     ldir = cdir.replace(os.path.join(base, 'src'), '')
     dirs = ldir.split('/')
     # test if we're within CMSSW_BASE/src/SubSystem area
     if  ldir and ldir[0] == '/' and len(dirs) == 2:
         return 'subsystem', ldir
-    # test if we're within CMSSW_BASE/src/SubSystem/src area
-    if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'src':
-        return 'src', ldir
-    # test if we're within CMSSW_BASE/src/SubSystem/plugin area
-    if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'plugins':
-        return 'plugins', ldir
+    # test if we're within CMSSW_BASE/src/SubSystem/Pkg area
+    if  ldir and ldir[0] == '/' and len(dirs) == 3:
+        return 'package', ldir
+    # test if we're within CMSSW_BASE/src/SubSystem/Pkg/src area
+#    if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'src':
+#        return 'src', ldir
+    # test if we're within CMSSW_BASE/src/SubSystem/Pkg/plugin area
+#    if  ldir and ldir[0] == '/' and len(dirs) == 4 and dirs[-1] == 'plugins':
+#        return 'plugins', ldir
+    # test if we're within CMSSW_BASE/src/SubSystem/Pkg/dir area
+    if  ldir and ldir[0] == '/' and len(dirs) == 4:
+        return dirs[-1], ldir
     return False, ldir
 
 def generate(kwds):
@@ -86,10 +90,27 @@ def generate(kwds):
     tmpl   = kwds.get('tmpl')
     stand_alone_group = ['Record', 'Skeleton']
     config.update({'not_in_dir': stand_alone_group})
-    if  tmpl not in stand_alone_group:
+    if  tmpl in stand_alone_group:
         whereami, ldir = test_cms_environment(tmpl)
         dirs = ldir.split('/')
+        config.update({'pkgname': kwds.get('pname')})
+        config.update({'subsystem': 'Subsystem'})
+        config.update({'pkgname': 'Package'})
+        if  whereami:
+            if  len(dirs) >= 3:
+                config.update({'subsystem': dirs[1]})
+                config.update({'pkgname': dirs[2]})
+            elif len(dirs) >= 2:
+                config.update({'subsystem': dirs[1]})
+                config.update({'pkgname': dirs[1]})
+    else:
+        whereami, ldir = test_cms_environment(tmpl)
+        dirs = ldir.split('/')
+        if  not dirs or not whereami:
+            print cms_error()
+            sys.exit(1)
         config.update({'subsystem': dirs[1]})
+        config.update({'pkgname': kwds.get('pname')})
         if  whereami in ['src', 'plugins']:
             config.update({'tmpl_files': '.cc'})
             config.update({'pkgname': dirs[2]})

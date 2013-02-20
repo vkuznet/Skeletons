@@ -2,19 +2,26 @@ Package Templates
 =================
 
 Skeletons template system uses user-defined templates which may have arbitrary
-files within template directory. The name of template directory defines a
+file structure within template directory. The name of template directory defines a
 template type available to the end-users.
 
-In order to extend Skeletons package with your own package template(s) you need
-to fullfill the following requirements:
+In order to extend Skeletons package with your own template package you need
+to create it within scripts/mkTemplates area of Skeletons package. The new
+template package may contain arbitrary set of files and any directory
+structure. But you need to provide a `Driver.dir` file with such structure.
+For instance, if you want to create template package `Foo` with
+src/test/include directories, Foo.cc file in src area, Foo.h in include area
+and top-level makefile your `Driver.dir` file will have the following structure:
 
-    - create a new package in Skeletons/src/python/Skeletons/templates area,
-      e.g. MyPackage
-    - place any type of file (your template) inside your package, e.g.
-      MyPackage/MyPackage.cc
-    - write your template according to Skeletons rules, see below
-    - optionally create Driver.dir file with layout of your new package
-      directories, see below
+.. code::
+
+    Makefile
+    src/Foo.cc
+    test/
+    include/Foo.h
+
+In order to write your template files, e.g. Foo.cc, Foo.h and Makefile, please
+consult Skeletons rules section.
 
 Skeletons rules
 ---------------

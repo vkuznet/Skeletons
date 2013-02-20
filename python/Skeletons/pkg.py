@@ -136,6 +136,23 @@ class AbstractPkg(object):
                             line = line.replace(key, val)
                     stream.write(line)
 
+    def get_kwds(self):
+        "Return keyword arguments to be used in methods"
+        kwds  = {'__pkgname__': self.config.get('pkgname', 'Package'),
+                 '__author__': self.author,
+                 '__user__': os.getlogin(),
+                 '__date__': self.date,
+                 '__class__': self.pname,
+                 '__name__': self.pname,
+                 '__rcsid__': self.rcsid,
+                 '__subsys__': self.config.get('subsystem', 'Subsystem')}
+        args = self.config.get('args', None)
+        kwds.update(args)
+        if  self.debug:
+            print "Template tags:"
+            pprint.pprint(kwds)
+        return kwds
+
     def generate(self):
         "Generate package templates in a given directory"
 
@@ -146,18 +163,7 @@ class AbstractPkg(object):
         tmpl_files = self.config.get('tmpl_files', 'all')
 
         # setup keyword arguments which we'll pass to write method
-        kwds  = {'__pkgname__': self.config.get('pkgname', self.pname),
-                 '__author__': self.author,
-                 '__date__': self.date,
-                 '__class__': self.pname,
-                 '__name__': self.pname,
-                 '__rcsid__': self.rcsid,
-                 '__subsys__': self.config.get('subsystem', self.pname)}
-        args = self.config.get('args', None)
-        kwds.update(args)
-        if  self.debug:
-            print "Template tags:"
-            pprint.pprint(kwds)
+        kwds = self.get_kwds()
 
         # create template package dir and cd into it
         if  tmpl_files == 'all' and self.tmpl not in self.not_in_dir:
@@ -171,6 +177,38 @@ class AbstractPkg(object):
         driver  = os.path.join(sdir, 'Driver.dir')
         if  os.path.isfile(driver):
             sources = [s.replace('\n', '') for s in open(driver, 'r').readlines()]
+
+        # special case of Skeleton, which requires to generate only given
+        # file type if self.pname has extension of that type
+        names = set([s.split('.')[0] for s in sources])
+        if  names == set(['Skeleton']):
+            if  self.pname.find('.') != -1:
+                _, ext = os.path.splitext(self.pname)
+                sources = [s for s in sources if s.rfind(ext) != -1]
+                self.pname = self.pname.replace(ext, '')
+                kwds = self.get_kwds()
+                if  not sources:
+                    msg = 'Unable to find skeleton for extension "%s"' % ext
+                    print msg
+                    sys.exit(1)
+            bdir = os.environ.get('CMSSW_BASE', '')
+            dirs = os.getcwd().replace(bdir, '').split('/')
+            ldir = os.getcwd().split('/')[-1]
+            idir = ''
+            subsys  = kwds['__subsys__']
+            pkgname = kwds['__pkgname__']
+            if  sources == ['Skeleton.cc', 'Skeleton.h']:
+                if  ldir == 'interface' and os.getcwd().find(bdir) != -1:
+                    idir = '%s/%s/interface/' % (subsys, pkgname)
+            # run within some directory of the Sybsystem/Pkg area
+            # and only for mkskel <file>.cc
+            elif sources == ['Skeleton.cc'] and \
+                len(dirs) == 5 and dirs[0] == ''  and dirs[1] == 'src':
+                idir = '%s/%s/interface/' % (subsys, pkgname)
+            elif sources == ['Skeleton.h'] and ldir == 'interface' and \
+                len(dirs) == 5 and dirs[0] == ''  and dirs[1] == 'src':
+                idir = '%s/%s/interface/' % (subsys, pkgname)
+            kwds.update({'__incdir__': idir})
 
         # loop over source files, create dirs as necessary and generate files
         # names for writing templates

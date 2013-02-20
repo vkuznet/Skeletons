@@ -1,62 +1,31 @@
 Example
 =======
 
-Let's create a new template package and call it MyPackage. We will create one
-C++ and one header template within this package. We will write associated
-module for Skeleton engine and demonstrate how to run your template. Here is
-directory structure you should create 
+Let's create a new template package and call it MyPackage. This package will
+have a header file in include directory and source file in src directory.
+We also want to have top-level Makefile. With this set of requirements we
+need to create the following template directory
 
 .. code::
 
-    MyPackage/MyPackage.cc
-    MyPackage/MyPackage.h
+    mkdir <path>/scripts/mkTemplates/MyPackage
 
-Please note, that template files (MyPackage.cc, MyPackage.h) may have
-different names. But if you'd like Skeleton engine to change the name of your
-template file according to user settings you need to name your template file
-with that name. For example, user wants to create a class Test from your
-MyPackage.cc, then Skeleton engine will change MyPackage.cc to Test.cc. While
-if you create a template file as TestMyPackageProd.cc the Skeleton engine will
-change it to TestTestProd.cc. The **MyPackage** serves as a replacement tag.
 
-Based on Skeleton rules you may use any any word/characters combination
-enclosed in double underscored as placeholder tags and package name double
-enclosure will be substituted with user settings. For example, let's create a
-simple C++ class whose name should be changed. The template will looks like
-this:
+Here the `<path>` refers to location of Skeleton scripts area. Now we need to
+create Driver.dir file which will instruct Skeleton engine about our intention.
 
 .. code::
 
-    class __MyPackage__ {
-        __MyPackage__(); // constructor
-        ~__MyPackage__(); // destructor
-    }
+    cd <path>/scripts/mkTemplates/MyPackage
+    cat > Driver.dir << EOF
+    Makefile
+    src/MyPackage.cc
+    include/MyPackage.h
+    test
+    EOF
 
-if your template name depends on actual MyPackage class you'll write it as
-following:
-
-.. code::
-
-    class __MyPackage__: public MyPackage {
-        __MyPackage__(); // constructor
-        ~__MyPackage__(); // destructor
-    }
-
-here the names enclosed with double underscores will be replaced by the package
-name of user choice, while base class will not. For example, if user will
-choose to create TestPackage (s)he will get the following:
-
-.. code::
-
-    class TestPackage: public MyPackage {
-        TestPackage(); // constructor
-        virtual ~TestPackage(); // destructor
-    }
-
-Here we show examples of MyPackage.cc and MyPackage.h for your convenience.
-
-MyPackage.h example
--------------------
+Here we created a Driver.dir file with appropriate content. Now let's move on
+and create our template files. Our first file is MyPackage.h:
 
 .. code::
 
@@ -83,10 +52,12 @@ MyPackage.h example
     };
     #endif // end of __class___ESPRODUCER_h define
 
+As you may noticed we used Skeleton placeholders tags with double underscores.
+(You can use any name surrounded by double underscores and will need to feed
+their content via mk-script). Here we use `__class__` to refer the class name
+and so on.
 
-    
-MyPackage.cc example
---------------------
+Here is content for our MyPackage.cc file:
 
 .. code::
 
@@ -135,6 +106,8 @@ MyPackage.cc example
     //define this as a plug-in
     DEFINE_FWK_EVENTSETUP_MODULE(__class__);
 
+The content of Makefile is not relevant here and can be anything you like.
+
 Finally, we create mkmypkg shell script in Skeletons/bin area with the
 following context:
 
@@ -147,10 +120,24 @@ following context:
     export SKL_PRGM=mkmypkg
     python $sroot/main.py --type=MyPackage ${1+"$@"} 
 
-With all of thise in place we are ready to use our template as following:
+With all of this in place we are ready to use our template as following:
 
 .. code::
 
     mkmypkg --name=TestPackage "__record__=MyRecord" "__datatypes__=['int',
     'double']"
 
+It will generate the following structure of new package:
+
+.. code::
+
+    TestPackage/
+    |  include/
+    |  |-- TestPackage.h
+    |  src/
+    |  |-- TestPackage.cc
+    |  test/
+    |  Makefile
+
+For more ideas please inspect any of the existing templates, e.g. c++11, which
+can be found in Skeleton scripts/mkTemplates/ area.

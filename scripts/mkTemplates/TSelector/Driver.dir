@@ -1,4 +1,4 @@
-BuildFile.tmpl
+BuildFile.xml
 src/TSelector.cc
 interface/TSelector.h
 interface/classes.h

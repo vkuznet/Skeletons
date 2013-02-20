@@ -1,4 +1,4 @@
-plugins/BuildFile.tmpl
+plugins/BuildFile.xml
 plugins/EDFilter.cc
 python
 test

@@ -99,6 +99,8 @@ def user_info(ainput=None):
         return ainput
     pwdstr = pwd.getpwnam(os.getlogin())
     author = pwdstr.pw_gecos
+    if  author and isinstance(author, basestring):
+        author = author.split(',')[0]
     return author
 
 def code_generator(kwds):
