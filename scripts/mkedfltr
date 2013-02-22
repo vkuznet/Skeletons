@@ -36,9 +36,9 @@ def pkg_help():
         └── test"""
     msg += '\nExample:'
     msg += '\n        # create new EDFilter code'
-    msg += '\n        mkFilter MyProd'
+    msg += '\n        mkFilter MyFilter'
     msg += '\n        # create new EDFilter code with given author'
-    msg += '\n        mkFilter MyProd -author "First Last"'
+    msg += '\n        mkFilter MyFilter -author "First Last"'
     msg += '\n'
     return msg
 
