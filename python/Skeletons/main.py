@@ -26,7 +26,8 @@ def tmpl_dir():
 class SkeletonOptionParser:
     "Skeleton option parser"
     def __init__(self):
-        usage  = "Usage: %prog [options]\n"
+        cname  = os.environ.get('MKTMPL_CMD', 'main.py')
+        usage  = "Usage: %s [options]\n" % cname
         self.parser = OptionParser(usage=usage)
         msg  = "debug output"
         self.parser.add_option("--debug", action="store_true",
