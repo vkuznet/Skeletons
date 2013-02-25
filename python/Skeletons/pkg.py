@@ -57,6 +57,8 @@ class AbstractPkg(object):
         for name in os.listdir(sdir):
             if  name[-1] == '~':
                 continue
+            if  name == 'CVS':
+                continue
             fname = os.path.join(sdir, name)
             with open(fname, 'r') as stream:
                 for line in stream.readlines():
@@ -76,6 +78,8 @@ class AbstractPkg(object):
         sdir = '%s/%s' % (self.tdir, self.tmpl)
         for name in os.listdir(sdir):
             if  name[-1] == '~':
+                continue
+            if  name == 'CVS':
                 continue
             fname = os.path.join(sdir, name)
             with open(fname, 'r') as stream:
@@ -167,6 +171,11 @@ class AbstractPkg(object):
 
         # create template package dir and cd into it
         if  tmpl_files == 'all' and self.tmpl not in self.not_in_dir:
+            if  os.path.isdir(self.pname):
+                msg  = "Can't create package '%s'\n" % self.pname
+                msg += "Directory %s is already exists" % self.pname
+                print msg
+                sys.exit(1)
             os.makedirs(self.pname)
             os.chdir(self.pname)
 
@@ -177,6 +186,8 @@ class AbstractPkg(object):
         driver  = os.path.join(sdir, 'Driver.dir')
         if  os.path.isfile(driver):
             sources = [s.replace('\n', '') for s in open(driver, 'r').readlines()]
+        if  'CVS' in sources:
+            sources.remove('CVS')
 
         # special case of Skeleton, which requires to generate only given
         # file type if self.pname has extension of that type
