@@ -27,13 +27,13 @@ def pkg_help():
     msg += '\nOutput : '
     msg += """
         MyFilter/
-        ├── BuildFile.xml
-        ├── doc
-        ├── interface
-        ├── python
-        ├── src
-        │   └── MyFilter.cc
-        └── test"""
+        |  plugins/
+        |  |-- BuildFile.xml
+        |  |-- MyFilter.cc
+        |  python/
+        |  test/
+        |  doc/
+        """
     msg += '\nExample:'
     msg += '\n        # create new EDFilter code'
     msg += '\n        mkFilter MyFilter'

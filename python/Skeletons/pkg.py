@@ -47,7 +47,7 @@ class AbstractPkg(object):
         self.tdir   = self.config.get('tmpl_dir')
         self.author = user_info(self.config.get('author', None))
         self.date   = time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime())
-        self.rcsid  = '$Id$'
+        self.rcsid  = '$%s$' % 'Id' # CVS commit is too smart
         self.not_in_dir = self.config.get('not_in_dir', [])
         
     def tmpl_etags(self):

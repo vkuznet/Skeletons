@@ -10,7 +10,7 @@
 
 */
 //-------------------------------------------------------------------------------------
-//\class __class__ __class__.cc __subsys__/__plugins__/plugins/__class__.h
+//\class __class__ __class__.cc __subsys__/__package__/plugins/__class__.h
 //\brief YOUR COMMENTS GO HERE
 //
 //

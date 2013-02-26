@@ -27,15 +27,14 @@ def pkg_help():
     msg += '\nOutput : '
     msg += """
         MyDataPkg/
-        ├── BuildFile.xml
-        ├── doc
-        ├── interface
-        │   └── classes.h
-        ├── python
-        ├── src
-        │   ├── classes.h
-        │   └── classes_def.xml
-        └── test"""
+        |-- BuildFile.xml
+        |  src/
+        |  |-- classes.h
+        |  |-- classes_def.xml
+        |  interface/
+        |  test/
+        |  doc/
+        """
     msg += '\nExample:'
     msg += '\n        # create new DataPkg code'
     msg += '\n        mkdatapkg MyDataPkg'

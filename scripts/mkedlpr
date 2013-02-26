@@ -27,19 +27,19 @@ def pkg_help():
     msg += '\nUsage  : mkedlpr MyLooper RecName DataType1 DataType2 ...'
     msg += '\n         -author "FirstName LastName"'
     msg += '\n'
-    msg += '\n         MyProd = name of the producer'
-    msg += '\n         RecName = name of the record to which the producer adds data'
-    msg += '\n         DataType1 = data type created by the producer'
+    msg += '\n         MyLooper = name of the looper'
+    msg += '\n         RecName = name of the record to which the looper adds data'
+    msg += '\n         DataType1 = data type created by the looper'
     msg += '\nOutput : '
     msg += """
         MyLooper/
-        ├── BuildFile.xml
-        ├── doc
-        ├── interface
-        ├── python
-        ├── src
-        │   ├── MyLooper.cc
-        └── test"""
+        |  plugins/
+        |  |-- BuildFile.xml
+        |  |-- MyLooper.cc
+        |  python/
+        |  test/
+        |  doc/
+        """
     msg += '\nExample:'
     msg += '\n        # create new EDLooper code'
     msg += '\n        mkedlpr MyLooper'

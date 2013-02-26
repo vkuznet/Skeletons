@@ -14,7 +14,7 @@
 // system include files
 
 // user include files
-#include "__subsys__/__pkgname__/interface/__class__.h"
+#include "__incdir____class__.h"
 
 
 //

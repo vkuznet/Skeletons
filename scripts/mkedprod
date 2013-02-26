@@ -27,16 +27,16 @@ def pkg_help():
     msg += ' <example_myparticle>'
     msg += '\nOutput : '
     msg += """
-        MyProd
-        ├── BuildFile.xml
-        ├── doc
-        ├── interface
-        ├── python
-        │   ├── CfiFile_cfi.py
-        │   └── ConfFile_cfg.py
-        ├── src
-        │   └── MyProd.cc
-        └── test"""
+        MyProd/
+        |  plugins/
+        |  |-- BuildFile.xml
+        |  |-- MyProd.cc
+        |  python/
+        |  |-- CfiFile_cfi.py
+        |  |-- ConfFile_cfg.py
+        |  test/
+        |  doc/
+        """
     msg += '\nExample:'
     msg += '\n        # create new EDProducer code'
     msg += '\n        mkedprod MyProd'

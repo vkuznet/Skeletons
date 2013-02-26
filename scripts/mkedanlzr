@@ -28,15 +28,15 @@ def pkg_help():
     msg += '\nOutput : '
     msg += """
         MyAnalyzer/
-        ├── BuildFile.xml
-        ├── doc
-        ├── interface
-        ├── python
-        │   ├── CfiFile_cfi.py
-        │   └── ConfFile_cfg.py
-        ├── src
-        │   └── MyAnalyzer.cc
-        └── test"""
+        |  plugins/
+        |  |-- BuildFile.xml
+        |  |-- MyAnalyzer.cc
+        |  python/
+        |  |-- CfiFile_cfi.py
+        |  |-- ConfFile_cfg.py
+        |  test/
+        |  doc/
+        """
     msg += '\nExample:'
     msg += '\n        # create new EDAnalyzer code'
     msg += '\n        mkedanlzr MyAnalyzer'

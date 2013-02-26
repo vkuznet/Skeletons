@@ -32,13 +32,13 @@ def pkg_help():
     msg += '\nOutput : '
     msg += """
         MyProd/
-        ├── BuildFile.xml
-        ├── doc
-        ├── interface
-        ├── python
-        ├── src
-        │   ├── MyProd.cc
-        └── test"""
+        |  plugins/
+        |  |-- BuildFile.xml
+        |  |-- MyProd.cc
+        |  python/
+        |  test/
+        |  doc/
+        """
     msg += '\nExample:'
     msg += '\n        # create new ESProducer code'
     msg += '\n        mkesprod MyProd'

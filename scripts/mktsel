@@ -28,16 +28,14 @@ def pkg_help():
     msg += '\nOutput : '
     msg += """
         MyTSel/
-        ├── BuildFile.xml
-        ├── doc
-        ├── interface
-        ├── python
-        ├── src
-        │   ├── MyTSel.cc
-        │   ├── MyTSel.h
-        │   ├── classes.h
-        │   └── classes_def.xml
-        └── test"""
+        |-- BuildFile.xml
+        |  src/
+        |  |-- MyTSel.cc
+        |  interface/
+        |  |-- MyTSel.h
+        |  |-- classes.h
+        |  |-- classes_def.xml
+        """
     msg += '\nExample:'
     msg += '\n        # create new TSelector code'
     msg += '\n        mktsel MyTSel'

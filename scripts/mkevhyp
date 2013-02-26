@@ -27,16 +27,14 @@ def pkg_help():
     msg += '\nOutput : '
     msg += """
         MyEventHypothesis/
-        ├── BuildFile.xml
-        ├── doc
-        ├── interface
-        │   ├── MyEventHypothesis.h
-        │   └── MyEventHypothesisProducer.h
-        ├── python
-        ├── src
-        │   ├── MyEventHypothesis.cc
-        │   └── MyEventHypothesisProducer.cc
-        └── test"""
+        |-- BuildFile.xml
+        |  interface/
+        |  |-- MyEventHypothesis.h
+        |  |-- EventHypothesisProducer.h
+        |  src/
+        |  |-- MyEventHypothesis.cc
+        |  |-- EventHypothesisProducer.cc
+        """
     msg += '\nExample:'
     msg += '\n        # create new EventHypothesis code'
     msg += '\n        mkevhyp MyEventHypothesis'

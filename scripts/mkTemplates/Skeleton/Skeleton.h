@@ -5,7 +5,7 @@
 // Package:     __pkgname__
 // Class  :     __class__
 // 
-/**\class __class__ __class__.h __author__/CMSSW/__pkgname__/__class__.h
+/**\class __class__ __class__.h "__incdir____class__.h"
 
  Description: [one line class summary]
 
